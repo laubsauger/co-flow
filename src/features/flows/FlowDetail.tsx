@@ -153,7 +153,7 @@ export function FlowDetail() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={springs.soft}
-      className="min-h-screen bg-background pb-24 relative"
+      className="min-h-screen bg-background pb-32 relative"
     >
       {/* Hero */}
       {(() => {

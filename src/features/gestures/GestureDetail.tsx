@@ -57,7 +57,7 @@ export function GestureDetail() {
     };
 
     return (
-        <div ref={swipeRef} className="min-h-screen bg-background pb-20 relative">
+        <div ref={swipeRef} className="min-h-screen bg-background pb-32 relative">
             {/* Detail Header / Hero */}
             <DetailHero
                 poster={gesture.media.poster}
