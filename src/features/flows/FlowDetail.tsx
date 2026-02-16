@@ -38,18 +38,20 @@ export function FlowDetail() {
 
   const flow = allFlows.find((f) => f.id === id);
 
-  const { totalDuration, contraindications, equipment, resolvedSteps } =
+  const { totalDuration, contraindications, equipment, bodyAreas, resolvedSteps } =
     useMemo(() => {
       if (!flow)
         return {
           totalDuration: 0,
           contraindications: [] as string[],
           equipment: [] as EquipmentItem[],
+          bodyAreas: [] as string[],
           resolvedSteps: [] as ResolvedStep[],
         };
 
       let total = 0;
       const contras = new Set<string>();
+      const areas = new Set<string>();
       // Track equipment: if any gesture marks it as required, it's required
       const equipMap = new Map<string, boolean>(); // name → optional
       const steps: ResolvedStep[] = flow.steps.map((step) => {
@@ -57,6 +59,7 @@ export function FlowDetail() {
         total += step.durationSec;
         if (gesture) {
           gesture.contraindications?.forEach((c) => contras.add(c));
+          gesture.bodyAreas?.forEach((a) => areas.add(a));
           gesture.equipment?.forEach((e) => {
             const existing = equipMap.get(e.name);
             // If any gesture requires it (optional !== true), mark as required
@@ -82,6 +85,7 @@ export function FlowDetail() {
         totalDuration: total,
         contraindications: Array.from(contras),
         equipment: equipList,
+        bodyAreas: Array.from(areas),
         resolvedSteps: steps,
       };
     }, [flow]);
@@ -226,6 +230,21 @@ export function FlowDetail() {
               <ColoredTag key={tag} tag={tag} size="md" />
             ))}
           </div>
+
+          {/* Body areas */}
+          {bodyAreas.length > 0 && (
+            <div className="flex gap-1.5 flex-wrap mt-3">
+              {bodyAreas.map((area) => (
+                <span
+                  key={area}
+                  className="capitalize text-[11px] font-medium px-2 py-0.5 rounded-full text-white"
+                  style={{ backgroundColor: getBodyAreaColor([area]) }}
+                >
+                  {area}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

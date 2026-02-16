@@ -197,6 +197,18 @@ export function FlowList() {
                                                 <Layers className="w-3.5 h-3.5" />
                                                 {flow.steps.length} steps
                                             </span>
+                                            <span className="flex items-center gap-0.5">
+                                                {Array.from(new Set(
+                                                    flow.steps.flatMap(s => gestureMap.get(s.gestureId)?.bodyAreas ?? [])
+                                                )).slice(0, 5).map(area => (
+                                                    <span
+                                                        key={area}
+                                                        className="w-2 h-2 rounded-full"
+                                                        style={{ backgroundColor: getBodyAreaColor([area]) }}
+                                                        title={area}
+                                                    />
+                                                ))}
+                                            </span>
                                         </div>
                                         <div className="flex gap-1">
                                             {flow.tags.slice(0, 3).map(tag => (

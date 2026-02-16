@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { allGestures } from '@/content/generated';
 import { cn } from '@/lib/utils';
-import { Search, Heart, SlidersHorizontal } from 'lucide-react';
+import { Search, Heart, SlidersHorizontal, Droplets, RectangleHorizontal } from 'lucide-react';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { ColoredTag } from '@/components/ColoredTag';
 import { useState, useMemo } from 'react';
@@ -213,6 +213,28 @@ export function GestureList() {
                                         {gesture.durationDefaults.defaultSec}s
                                     </div>
                                 </div>
+                                {gesture.equipment && gesture.equipment.length > 0 && (
+                                    <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                                        {gesture.equipment.map(e => (
+                                            <div
+                                                key={e.name}
+                                                className={cn(
+                                                    "backdrop-blur-sm rounded-full p-1",
+                                                    e.optional ? "bg-white/20" : "bg-black/50"
+                                                )}
+                                                title={`${e.name}${e.optional ? ' (optional)' : ''}`}
+                                            >
+                                                {e.name === 'massage oil' ? (
+                                                    <Droplets className="w-3 h-3 text-white" />
+                                                ) : e.name === 'mat' ? (
+                                                    <RectangleHorizontal className="w-3 h-3 text-white" />
+                                                ) : (
+                                                    <span className="text-[9px] text-white leading-none px-0.5">{e.name}</span>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className="p-4">
                                 <motion.h3 layoutId={`title-${gesture.id}`} className="font-semibold leading-none tracking-tight mb-2">

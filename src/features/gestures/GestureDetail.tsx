@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Play, Timer, Heart, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal } from 'lucide-react';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
@@ -175,6 +175,33 @@ export function GestureDetail() {
                         ))}
                     </div>
                 </div>
+
+                {/* Equipment */}
+                {gesture.equipment && gesture.equipment.length > 0 && (
+                    <div className="text-sm">
+                        <h3 className="font-medium text-muted-foreground mb-2">Equipment</h3>
+                        <div className="flex flex-wrap gap-1.5">
+                            {gesture.equipment.map(e => (
+                                <span
+                                    key={e.name}
+                                    className={cn(
+                                        "capitalize text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center gap-1.5",
+                                        e.optional
+                                            ? "bg-secondary text-secondary-foreground"
+                                            : "bg-foreground/10 text-foreground"
+                                    )}
+                                >
+                                    {e.name === 'massage oil' ? (
+                                        <Droplets className="w-3 h-3" />
+                                    ) : e.name === 'mat' ? (
+                                        <RectangleHorizontal className="w-3 h-3" />
+                                    ) : null}
+                                    {e.name}{e.optional ? ' (optional)' : ''}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Transcript */}
                 {gesture.media.transcript && (
