@@ -3,9 +3,9 @@ import { motion, Reorder, useDragControls } from 'framer-motion';
 import { allFlows, gestureMap } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
-import { PlaceholderImage } from '@/components/PlaceholderImage';
+import { DetailHero } from '@/components/DetailHero';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
 import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
 import { useState, useMemo } from 'react';
+import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
 
@@ -31,6 +32,7 @@ type ReorderStep = ResolvedStep & { _key: string };
 let flowDetailKeySeq = 0;
 
 export function FlowDetail() {
+  useScrollTop();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { loadFlow, play } = usePlayerStore();
@@ -153,107 +155,72 @@ export function FlowDetail() {
       transition={springs.soft}
       className="min-h-screen bg-background pb-24 relative"
     >
-      {/* Hero Image */}
+      {/* Hero */}
       {(() => {
         const firstGesture = resolvedSteps[0]?.gesture as Gesture | undefined;
         const poster = flow.poster || firstGesture?.media.poster;
-        const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
+        const heroBodyAreas = firstGesture?.bodyAreas ?? [];
         return (
-          <div
-            className="w-full relative h-[30vh] sm:h-[40vh] overflow-hidden"
-            style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
+          <DetailHero
+            poster={poster}
+            alt={flow.name}
+            bodyAreas={heroBodyAreas}
+            backTo="/"
+            backLabel="Back to flows"
+            placeholderType="flow"
           >
-            {poster ? (
-              <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
-            ) : (
-              <PlaceholderImage type="flow" />
+            <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
+              {flow.name}
+            </h1>
+            {flow.description && (
+              <p className="text-foreground/70 leading-relaxed mb-3 line-clamp-2 text-sm">
+                {flow.description}
+              </p>
             )}
-            {tintColor && (
-              <div
-                className="absolute inset-0 mix-blend-color opacity-45 pointer-events-none"
-                style={{ backgroundColor: tintColor }}
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
-          </div>
+            <div className="flex items-center gap-4 text-sm font-medium text-foreground/70">
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-4 h-4" />
+                {formatDuration(totalDuration)}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Layers className="w-4 h-4" />
+                {flow.steps.length} steps
+              </span>
+              {isCompiled && (
+                <Badge variant="secondary" className="text-xs">
+                  Compiled
+                </Badge>
+              )}
+            </div>
+          </DetailHero>
         );
       })()}
 
-      {/* Header */}
-      <div className="px-4 pb-6 -mt-16 relative z-10">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <Link to="/" aria-label="Back to flows">
-              <Button
-                variant="ghost"
-                className="rounded-full w-10 h-10 p-0 bg-background/50 hover:bg-background/80 backdrop-blur-md"
-              >
-                <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-              </Button>
-            </Link>
-            <div className="flex-1" />
-            <Button
-              variant="ghost"
-              className="rounded-full w-10 h-10 p-0"
-              onClick={() => toggleFavoriteFlow(flow.id)}
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <Heart
-                className={cn(
-                  'w-5 h-5 transition-colors',
-                  isFavorite
-                    ? 'text-red-500 fill-red-500'
-                    : 'text-muted-foreground'
-                )}
-              />
-            </Button>
-          </div>
-
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
-            {flow.name}
-          </h1>
-          <p className="text-muted-foreground leading-relaxed mb-4">
-            {flow.description}
-          </p>
-
-          {/* Meta row */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              {formatDuration(totalDuration)}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Layers className="w-4 h-4" />
-              {flow.steps.length} steps
-            </span>
-            {isCompiled && (
-              <Badge variant="secondary" className="text-xs">
-                Compiled
-              </Badge>
+      {/* Tags + Body areas + Favorite */}
+      <div className="px-4 pt-4 max-w-2xl mx-auto">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            {flow.tags.length > 0 && (
+              <div className="flex gap-1.5 flex-wrap">
+                {flow.tags.map((tag) => (
+                  <ColoredTag key={tag} tag={tag} size="md" />
+                ))}
+              </div>
+            )}
+            {bodyAreas.length > 0 && (
+              <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+                {bodyAreas.map((area) => (
+                  <span
+                    key={area}
+                    className="capitalize text-[11px] font-medium px-2 py-0.5 rounded-full text-white whitespace-nowrap"
+                    style={{ backgroundColor: getBodyAreaColor([area]) }}
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
-
-          {/* Tags */}
-          <div className="flex gap-1.5 flex-wrap">
-            {flow.tags.map((tag) => (
-              <ColoredTag key={tag} tag={tag} size="md" />
-            ))}
-          </div>
-
-          {/* Body areas */}
-          {bodyAreas.length > 0 && (
-            <div className="flex gap-1.5 flex-wrap mt-3">
-              {bodyAreas.map((area) => (
-                <span
-                  key={area}
-                  className="capitalize text-[11px] font-medium px-2 py-0.5 rounded-full text-white"
-                  style={{ backgroundColor: getBodyAreaColor([area]) }}
-                >
-                  {area}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
@@ -275,15 +242,32 @@ export function FlowDetail() {
           </div>
         )}
 
-        {/* Play button */}
-        <Button
-          className="w-full h-12 text-base shadow-lg"
-          onClick={handlePlay}
-          disabled={flow.steps.length === 0 && !isCompiled}
-        >
-          <Play className="w-5 h-5 mr-2 fill-current" />
-          Start Flow
-        </Button>
+        {/* Play + Favorite */}
+        <div className="flex gap-4">
+          <Button
+            className="flex-1 h-12 text-base shadow-lg"
+            onClick={handlePlay}
+            disabled={flow.steps.length === 0 && !isCompiled}
+          >
+            <Play className="w-5 h-5 mr-2 fill-current" />
+            Start Flow
+          </Button>
+          <Button
+            variant="secondary"
+            className="w-12 h-12 px-0"
+            onClick={() => toggleFavoriteFlow(flow.id)}
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart
+              className={cn(
+                'w-6 h-6 transition-colors',
+                isFavorite
+                  ? 'text-red-500 fill-red-500'
+                  : 'text-muted-foreground hover:text-red-500'
+              )}
+            />
+          </Button>
+        </div>
 
         {/* Equipment */}
         {equipment.length > 0 && (
@@ -291,12 +275,12 @@ export function FlowDetail() {
             <h3 className="font-medium text-sm text-muted-foreground mb-2">
               Equipment
             </h3>
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
               {equipment.map((e) => (
                 <Badge
                   key={e.name}
                   variant={e.optional ? 'outline' : 'secondary'}
-                  className="capitalize"
+                  className="capitalize whitespace-nowrap"
                 >
                   {e.name}{e.optional ? ' (optional)' : ''}
                 </Badge>

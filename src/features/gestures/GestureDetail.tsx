@@ -1,20 +1,21 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
-import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { ColoredTag } from '@/components/ColoredTag';
+import { DetailHero } from '@/components/DetailHero';
 import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
 import { TranscriptSection } from './TranscriptSection';
+import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
 
 export function GestureDetail() {
+    useScrollTop();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { loadGesture, play } = usePlayerStore();
@@ -58,57 +59,30 @@ export function GestureDetail() {
     return (
         <div ref={swipeRef} className="min-h-screen bg-background pb-20 relative">
             {/* Detail Header / Hero */}
-            <motion.div
-                layoutId={`card-${gesture.id}`}
-                className="w-full relative h-[40vh] sm:h-[50vh] overflow-hidden"
-                style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
+            <DetailHero
+                poster={gesture.media.poster}
+                alt={gesture.name}
+                bodyAreas={gesture.bodyAreas}
+                backTo="/gestures"
+                backLabel="Back to library"
             >
-                {gesture.media.poster ? (
-                    <motion.img
-                        layoutId={`image-${gesture.id}`}
-                        src={gesture.media.poster}
-                        alt={gesture.name}
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <PlaceholderImage />
-                )}
-                <div
-                    className="absolute inset-0 mix-blend-color opacity-40 pointer-events-none"
-                    style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
-
-                <div className="absolute top-4 left-4 z-10">
-                    <Link to="/gestures" aria-label="Back to library">
-                        <Button className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm" variant="ghost">
-                            <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-                        </Button>
-                    </Link>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
+                    {gesture.name}
+                </h1>
+                <div className="flex gap-2 mb-2 flex-wrap">
+                    {gesture.tags.map(tag => (
+                        <ColoredTag key={tag} tag={tag} size="md" className="backdrop-blur-md" />
+                    ))}
                 </div>
-
-                <div className="absolute bottom-6 left-4 right-4 text-left z-10">
-                    <motion.h1
-                        layoutId={`title-${gesture.id}`}
-                        className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2"
-                    >
-                        {gesture.name}
-                    </motion.h1>
-                    <div className="flex gap-2 mb-2 flex-wrap">
-                        {gesture.tags.map(tag => (
-                            <ColoredTag key={tag} tag={tag} size="md" className="backdrop-blur-md" />
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-4 text-sm font-medium text-foreground/70">
-                        <span className="flex items-center gap-1">
-                            <Timer className="w-4 h-4" /> {gesture.durationDefaults.defaultSec}s
-                        </span>
-                        <span className="flex items-center gap-1">
-                            ⚡ Intensity {gesture.intensity}/5
-                        </span>
-                    </div>
+                <div className="flex items-center gap-4 text-sm font-medium text-foreground/70">
+                    <span className="flex items-center gap-1">
+                        <Timer className="w-4 h-4" /> {gesture.durationDefaults.defaultSec}s
+                    </span>
+                    <span className="flex items-center gap-1">
+                        ⚡ Intensity {gesture.intensity}/5
+                    </span>
                 </div>
-            </motion.div>
+            </DetailHero>
 
             {/* Content */}
             <div className="p-6 max-w-2xl mx-auto space-y-8">
@@ -171,11 +145,11 @@ export function GestureDetail() {
                 {/* Technical Details */}
                 <div className="text-sm">
                     <h3 className="font-medium text-muted-foreground mb-2">Body Areas</h3>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
                         {gesture.bodyAreas.map(area => (
                             <span
                                 key={area}
-                                className="capitalize text-xs font-medium px-2.5 py-1 rounded-full text-white"
+                                className="capitalize text-xs font-medium px-2.5 py-1 rounded-full text-white whitespace-nowrap"
                                 style={{ backgroundColor: getBodyAreaColor([area]) }}
                             >
                                 {area}
@@ -188,12 +162,12 @@ export function GestureDetail() {
                 {gesture.equipment && gesture.equipment.length > 0 && (
                     <div className="text-sm">
                         <h3 className="font-medium text-muted-foreground mb-2">Equipment</h3>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
                             {gesture.equipment.map(e => (
                                 <span
                                     key={e.name}
                                     className={cn(
-                                        "capitalize text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center gap-1.5",
+                                        "capitalize text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 whitespace-nowrap",
                                         e.optional
                                             ? "bg-secondary text-secondary-foreground"
                                             : "bg-foreground/10 text-foreground"
