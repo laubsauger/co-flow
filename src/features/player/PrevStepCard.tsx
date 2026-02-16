@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { SideBadge } from '@/components/SideBadge';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import type { PlayerStep } from '@/lib/types/player';
 
@@ -10,11 +11,12 @@ interface PrevStepCardProps {
 export function PrevStepCard({ step }: PrevStepCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 0.4, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-      className="w-full max-w-sm pointer-events-none"
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 0.4 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+      className="w-full pointer-events-none"
     >
       <div
         className="bg-card border rounded-xl px-4 py-3 flex items-center gap-3 border-l-[3px]"
@@ -35,6 +37,7 @@ export function PrevStepCard({ step }: PrevStepCardProps) {
           </div>
         </div>
         <p className="font-medium text-sm truncate flex-1">{step.gesture.name}</p>
+        {step.side && <SideBadge side={step.side} />}
         <span className="text-xs text-muted-foreground tabular-nums">
           {step.durationSec}s
         </span>

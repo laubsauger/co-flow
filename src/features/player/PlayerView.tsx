@@ -16,6 +16,7 @@ import { useWakeLock } from './useWakeLock';
 import { useAudioChainer } from './hooks/use-audio-chainer';
 import { startSnapshotLoop } from '@/lib/stores/session-resume';
 import { useUserData } from '@/lib/stores/user-data';
+import { BrandHeader } from '@/components/BrandHeader';
 
 export function PlayerView() {
     const {
@@ -80,12 +81,13 @@ export function PlayerView() {
     // Empty state
     if (steps.length === 0) {
         return (
-            <div className="h-screen flex items-center justify-center">
-                <div className="text-center">
+            <div className="h-screen flex flex-col items-center justify-center gap-6">
+                <BrandHeader />
+                <div className="text-center space-y-2">
                     <h2 className="text-xl font-bold">Nothing queued up</h2>
-                    <p className="text-sm text-muted-foreground mt-2">Head back and choose something to play.</p>
-                    <Button onClick={() => navigate('/')} className="mt-4">Go Home</Button>
+                    <p className="text-sm text-muted-foreground">Head back and choose something to play.</p>
                 </div>
+                <Button onClick={() => navigate('/')}>Browse Flows</Button>
             </div>
         );
     }
@@ -100,6 +102,9 @@ export function PlayerView() {
                     transition={springs.bouncy}
                     className="text-center space-y-6"
                 >
+                    <div className="flex justify-center [&_svg]:text-primary-foreground [&_span]:text-primary-foreground">
+                        <BrandHeader />
+                    </div>
                     <h1 className="text-4xl font-bold">Well done</h1>
                     <p className="text-primary-foreground/80">You showed up for yourself today.</p>
                     <Button variant="secondary" onClick={() => navigate('/')} className="w-full">
@@ -189,17 +194,19 @@ export function PlayerView() {
                 />
             </div>
 
-            {/* Card Stack */}
+            {/* Card Stack — fixed-height slots so prev/next don't shift layout */}
             <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-4 overflow-hidden">
-                {/* Prev */}
-                <AnimatePresence>
-                    {prevStep && (
-                        <PrevStepCard key={`prev-${currentStepIndex - 1}`} step={prevStep} />
-                    )}
-                </AnimatePresence>
+                {/* Prev slot — always present, fixed height */}
+                <div className="w-full max-w-sm h-[58px] flex-shrink-0">
+                    <AnimatePresence mode="popLayout">
+                        {prevStep && (
+                            <PrevStepCard key={`prev-${currentStepIndex - 1}`} step={prevStep} />
+                        )}
+                    </AnimatePresence>
+                </div>
 
                 {/* Current */}
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="popLayout">
                     <CurrentStepCard
                         key={`current-${currentStepIndex}`}
                         step={currentStep}
@@ -210,12 +217,14 @@ export function PlayerView() {
                     />
                 </AnimatePresence>
 
-                {/* Next */}
-                <AnimatePresence>
-                    {nextStep && (
-                        <NextStepCard key={`next-${currentStepIndex + 1}`} step={nextStep} />
-                    )}
-                </AnimatePresence>
+                {/* Next slot — always present, fixed height */}
+                <div className="w-full max-w-sm h-[58px] flex-shrink-0">
+                    <AnimatePresence mode="popLayout">
+                        {nextStep && (
+                            <NextStepCard key={`next-${currentStepIndex + 1}`} step={nextStep} />
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
 
             {/* Captions overlay */}

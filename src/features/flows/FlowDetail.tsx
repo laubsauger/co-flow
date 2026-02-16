@@ -17,6 +17,7 @@ import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
 import { DetailActions } from '@/components/DetailActions';
+import { SideBadge } from '@/components/SideBadge';
 
 type ResolvedStep = {
   gestureId: string;
@@ -466,16 +467,7 @@ function FlowDetailStep({
       </Link>
       <div className="flex items-center gap-2 flex-shrink-0">
         {step.side && step.side !== 'none' && (
-          <span
-            className={cn(
-              "text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full border",
-              step.side === 'left'
-                ? "bg-blue-500/15 text-blue-500 border-blue-500/25"
-                : "bg-amber-500/15 text-amber-500 border-amber-500/25"
-            )}
-          >
-            {step.side === 'left' ? 'L' : 'R'}
-          </span>
+          <SideBadge side={step.side} />
         )}
         <span className="text-xs text-muted-foreground tabular-nums">
           {formatDuration(step.durationSec)}

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import { SideBadge } from '@/components/SideBadge';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import type { PlayerStep } from '@/lib/types/player';
 
@@ -10,11 +11,12 @@ interface NextStepCardProps {
 export function NextStepCard({ step }: NextStepCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 0.5, y: 0 }}
-      exit={{ opacity: 0, y: 12 }}
-      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-      className="w-full max-w-sm pointer-events-none"
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 0.5 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+      className="w-full pointer-events-none"
     >
       <div
         className="bg-card border rounded-xl px-4 py-3 flex items-center gap-3 border-l-[3px]"
@@ -37,6 +39,7 @@ export function NextStepCard({ step }: NextStepCardProps) {
           <p className="text-xs uppercase text-muted-foreground font-medium">Up Next</p>
           <p className="font-medium text-sm truncate">{step.gesture.name}</p>
         </div>
+        {step.side && <SideBadge side={step.side} />}
         <span className="text-xs text-muted-foreground tabular-nums flex items-center gap-0.5">
           {step.durationSec}s
           <ChevronRight className="w-3 h-3" />

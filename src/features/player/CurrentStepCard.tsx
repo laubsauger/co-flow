@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { SideBadge } from '@/components/SideBadge';
 import { resolveGestureMediaUrl } from './hooks/resolve-media-url';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import type { PlayerStep, PlayerStatus } from '@/lib/types/player';
@@ -59,10 +60,11 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
   return (
     <motion.div
       key={step.gesture.id}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+      layout
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
       className="w-full max-w-sm bg-card border rounded-3xl shadow-xl overflow-hidden flex flex-col aspect-[3/4]"
     >
       {/* Media area — poster or video */}
@@ -122,12 +124,13 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
         {/* Side indicator */}
         {step.side && (
           <div className="absolute top-4 right-4">
-            <span className={cn(
-              'bg-white/90 text-black font-bold rounded-full uppercase tracking-wide',
-              glanceMode ? 'text-sm px-3.5 py-1.5' : 'text-xs px-2.5 py-1'
-            )}>
-              {step.side === 'left' ? 'L' : 'R'}
-            </span>
+            <SideBadge
+              side={step.side}
+              className={cn(
+                'border-transparent shadow-sm',
+                glanceMode ? 'text-sm px-3.5 py-1.5' : 'text-xs px-2.5 py-1',
+              )}
+            />
           </div>
         )}
 
