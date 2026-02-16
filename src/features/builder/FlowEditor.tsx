@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Reorder, motion, AnimatePresence } from 'framer-motion';
+import { Reorder, motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useUserFlows } from '@/lib/stores/user-flows';
 import { gestureMap } from '@/content/generated';
@@ -17,12 +17,18 @@ import {
   GripVertical,
   Check,
 } from 'lucide-react';
-import { springs } from '@/motion/tokens';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { GesturePicker } from './GesturePicker';
 import type { FlowStep } from '@/lib/types/flow';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture } from '@/lib/types/gesture';
+
+// Stable drag keys — monotonic counter ensures uniqueness across re-keys
+let dragKeySeq = 0;
+type KeyedStep = FlowStep & { _key: string };
+function keySteps(steps: FlowStep[]): KeyedStep[] {
+  return steps.map((s) => ({ ...s, _key: `s${++dragKeySeq}` }));
+}
 
 export function FlowEditor() {
   const { id } = useParams<{ id: string }>();
@@ -47,33 +53,44 @@ export function FlowEditor() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const prevStepsRef = useRef(flow?.steps);
 
-  // Keep a local copy of steps for Reorder (it needs a value prop)
-  const [localSteps, setLocalSteps] = useState<FlowStep[]>(
-    flow?.steps ?? []
+  // Local keyed steps for Reorder — stable keys prevent unmount/remount on swap
+  const [items, setItems] = useState<KeyedStep[]>(() =>
+    keySteps(flow?.steps ?? [])
   );
 
-  // Sync local steps when store step count changes (additions/removals)
-  useEffect(() => {
-    if (!id) return;
-    const unsub = useUserFlows.subscribe((state) => {
-      const current = state.flows.find((f) => f.id === id);
-      if (current) setLocalSteps(current.steps);
-    });
-    return unsub;
-  }, [id]);
+  // Guard: skip next subscription update after our own reorder
+  const reorderingRef = useRef(false);
 
-  // Show "Saved" briefly when flow data changes via store subscription
+  // Single merged subscription: sync local items + show saved indicator
   useEffect(() => {
     if (!id) return;
     const unsub = useUserFlows.subscribe((state) => {
       const current = state.flows.find((f) => f.id === id);
       if (!current) return;
-      if (prevStepsRef.current === current.steps) return;
-      prevStepsRef.current = current.steps;
 
-      setShowSaved(true);
-      clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = setTimeout(() => setShowSaved(false), 1500);
+      // Skip when we just did a reorder — our own setState is sufficient
+      if (reorderingRef.current) {
+        reorderingRef.current = false;
+        return;
+      }
+
+      // Sync drag items
+      setItems((prev) => {
+        if (current.steps.length !== prev.length) {
+          // Structural change (add/remove) — re-key everything
+          return keySteps(current.steps);
+        }
+        // Same length — preserve keys, update step data
+        return prev.map((item, i) => ({ ...current.steps[i], _key: item._key }));
+      });
+
+      // Show saved indicator
+      if (prevStepsRef.current !== current.steps) {
+        prevStepsRef.current = current.steps;
+        setShowSaved(true);
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = setTimeout(() => setShowSaved(false), 1500);
+      }
     });
     return () => {
       unsub();
@@ -107,20 +124,16 @@ export function FlowEditor() {
     addStep(id, step);
   };
 
-  const handleReorder = (newOrder: FlowStep[]) => {
-    setLocalSteps(newOrder);
-    // Find the permutation and apply to store
-    // Since Reorder gives us the new array, we overwrite steps
-    // We need to update the store with the new order
-    const store = useUserFlows.getState();
-    const flowIdx = store.flows.findIndex((f) => f.id === id);
-    if (flowIdx >= 0) {
-      useUserFlows.setState({
-        flows: store.flows.map((f) =>
-          f.id === id ? { ...f, steps: newOrder } : f
-        ),
-      });
-    }
+  const handleReorder = (newOrder: KeyedStep[]) => {
+    reorderingRef.current = true;
+    setItems(newOrder);
+    // Strip _key before persisting to store
+    const stripped: FlowStep[] = newOrder.map(({ _key, ...step }) => step);
+    useUserFlows.setState((state) => ({
+      flows: state.flows.map((f) =>
+        f.id === id ? { ...f, steps: stripped } : f
+      ),
+    }));
   };
 
   const handlePreview = () => {
@@ -215,14 +228,14 @@ export function FlowEditor() {
         ) : (
           <Reorder.Group
             axis="y"
-            values={localSteps}
+            values={items}
             onReorder={handleReorder}
             className="space-y-2"
           >
-            {localSteps.map((step, i) => (
+            {items.map((item, i) => (
               <StepItem
-                key={`${step.gestureId}-${i}`}
-                step={step}
+                key={item._key}
+                item={item}
                 index={i}
                 onRemove={() => removeStep(id, i)}
                 onDuplicate={() => duplicateStep(id, i)}
@@ -262,29 +275,36 @@ export function FlowEditor() {
 }
 
 function StepItem({
-  step,
+  item,
   index,
   onRemove,
   onDuplicate,
   onUpdate,
 }: {
-  step: FlowStep;
+  item: KeyedStep;
   index: number;
   onRemove: () => void;
   onDuplicate: () => void;
   onUpdate: (updates: Partial<FlowStep>) => void;
 }) {
-  const gesture = gestureMap.get(step.gestureId);
+  const gesture = gestureMap.get(item.gestureId);
   const [expanded, setExpanded] = useState(false);
+  const controls = useDragControls();
 
   return (
     <Reorder.Item
-      value={step}
-      transition={springs.snappy}
+      value={item}
+      dragListener={false}
+      dragControls={controls}
+      transition={{ type: 'spring', stiffness: 250, damping: 25 }}
       className="rounded-lg border bg-card shadow-sm"
     >
       <div className="flex items-center gap-2 p-3">
-        <GripVertical className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing" aria-hidden="true" />
+        <GripVertical
+          className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+          aria-hidden="true"
+          onPointerDown={(e) => controls.start(e)}
+        />
 
         <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
           <img
@@ -306,18 +326,26 @@ function StepItem({
           className="flex-1 min-w-0 text-left"
         >
           <p className="font-medium text-sm truncate">
-            {step.title || gesture?.name || step.gestureId}
+            {item.title || gesture?.name || item.gestureId}
           </p>
+          {gesture && (
+            <p
+              className="text-[11px] truncate capitalize"
+              style={{ color: getBodyAreaColor(gesture.bodyAreas) }}
+            >
+              {gesture.bodyAreas.join(', ')}
+            </p>
+          )}
         </button>
 
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          {step.side && step.side !== 'none' && (
+          {item.side && item.side !== 'none' && (
             <Badge variant="outline" className="text-[10px] uppercase px-1.5">
-              {step.side === 'left' ? 'L' : 'R'}
+              {item.side === 'left' ? 'L' : 'R'}
             </Badge>
           )}
           <span className="text-xs text-muted-foreground tabular-nums">
-            {step.durationSec}s
+            {item.durationSec}s
           </span>
         </div>
       </div>
@@ -339,14 +367,14 @@ function StepItem({
                   min={gesture?.durationDefaults.minSec ?? 10}
                   max={gesture?.durationDefaults.maxSec ?? 300}
                   step={5}
-                  value={[step.durationSec]}
+                  value={[item.durationSec]}
                   onValueChange={([val]) =>
                     onUpdate({ durationSec: val })
                   }
                   className="flex-1"
                 />
                 <span className="text-xs tabular-nums w-10 text-right">
-                  {step.durationSec}s
+                  {item.durationSec}s
                 </span>
               </div>
 
@@ -357,7 +385,7 @@ function StepItem({
                   {(['none', 'left', 'right'] as const).map((side) => (
                     <Button
                       key={side}
-                      variant={step.side === side || (!step.side && side === 'none') ? 'default' : 'outline'}
+                      variant={item.side === side || (!item.side && side === 'none') ? 'default' : 'outline'}
                       size="sm"
                       className="h-7 text-xs px-3"
                       onClick={() => onUpdate({ side })}
@@ -372,7 +400,7 @@ function StepItem({
               <div className="flex items-start gap-3">
                 <label className="text-xs text-muted-foreground w-16 pt-2">Notes</label>
                 <Input
-                  value={step.notes ?? ''}
+                  value={item.notes ?? ''}
                   onChange={(e) => onUpdate({ notes: e.target.value })}
                   placeholder="Optional notes..."
                   className="flex-1 h-8 text-xs"

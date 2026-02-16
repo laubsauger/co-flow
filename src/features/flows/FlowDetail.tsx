@@ -1,9 +1,9 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { allFlows, allGestures, gestureMap } from '@/content/generated';
+import { motion, Reorder, useDragControls } from 'framer-motion';
+import { allFlows, gestureMap } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle, GripVertical } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { usePlayerStore } from '@/lib/stores/player';
@@ -12,9 +12,20 @@ import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture } from '@/lib/types/gesture';
+
+type ResolvedStep = {
+  gestureId: string;
+  durationSec: number;
+  side?: 'left' | 'right' | 'none';
+  notes?: string;
+  title?: string;
+  gesture: Gesture | undefined;
+};
+
+type ReorderStep = ResolvedStep & { _key: string };
 
 export function FlowDetail() {
   const { id } = useParams<{ id: string }>();
@@ -32,20 +43,20 @@ export function FlowDetail() {
           totalDuration: 0,
           contraindications: [] as string[],
           equipment: [] as string[],
-          resolvedSteps: [],
+          resolvedSteps: [] as ResolvedStep[],
         };
 
       let total = 0;
       const contras = new Set<string>();
       const equip = new Set<string>();
-      const steps = flow.steps.map((step) => {
+      const steps: ResolvedStep[] = flow.steps.map((step) => {
         const gesture = gestureMap.get(step.gestureId);
         total += step.durationSec;
         if (gesture) {
           gesture.contraindications?.forEach((c) => contras.add(c));
           gesture.equipment?.forEach((e) => equip.add(e));
         }
-        return { ...step, gesture };
+        return { ...step, gesture: gesture as Gesture | undefined };
       });
 
       return {
@@ -55,6 +66,12 @@ export function FlowDetail() {
         resolvedSteps: steps,
       };
     }, [flow]);
+
+  // Local reorderable state with stable keys
+  const keyRef = useRef(0);
+  const [localSteps, setLocalSteps] = useState<ReorderStep[]>(() =>
+    resolvedSteps.map((s) => ({ ...s, _key: `fs${++keyRef.current}` }))
+  );
 
   if (!flow) {
     return (
@@ -69,10 +86,9 @@ export function FlowDetail() {
 
   const startPlayback = () => {
     const playerSteps: PlayerStep[] = [];
-    for (const s of flow.steps) {
-      const gesture = allGestures.find((g) => g.id === s.gestureId);
-      if (!gesture) continue;
-      playerSteps.push({ gesture, durationSec: s.durationSec });
+    for (const s of localSteps) {
+      if (!s.gesture) continue;
+      playerSteps.push({ gesture: s.gesture as Gesture, durationSec: s.durationSec });
     }
     if (playerSteps.length > 0) {
       loadFlow(flow.name, playerSteps);
@@ -239,61 +255,25 @@ export function FlowDetail() {
           </div>
         )}
 
-        {/* Step sequence */}
-        {resolvedSteps.length > 0 && (
+        {/* Step sequence — reorderable */}
+        {localSteps.length > 0 && (
           <div>
-            <h3 className="font-medium text-sm text-muted-foreground mb-3">
+            <h3 className="font-medium text-sm text-muted-foreground mb-1">
               Sequence
             </h3>
-            <div className="space-y-2 rounded-xl bg-secondary/20 p-3">
-              {resolvedSteps.map((step, i) => (
-                <motion.div
-                  key={`${step.gestureId}-${i}`}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...springs.soft, delay: i * 0.04 }}
-                  className="flex items-center gap-3 rounded-lg bg-card/80 p-3"
-                >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
-                    <img
-                      src={step.gesture?.media.poster || '/media/generic-gesture.png'}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
-                    <div
-                      className="absolute inset-0 mix-blend-color opacity-30"
-                      style={{ backgroundColor: step.gesture ? getBodyAreaColor(step.gesture.bodyAreas) : 'var(--secondary)' }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md bg-black/10">
-                      {i + 1}
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">
-                      {step.title || step.gesture?.name || step.gestureId}
-                    </p>
-                    {step.notes && (
-                      <p className="text-xs text-muted-foreground truncate">
-                        {step.notes}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {step.side && step.side !== 'none' && (
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] uppercase px-1.5"
-                      >
-                        {step.side === 'left' ? 'L' : 'R'}
-                      </Badge>
-                    )}
-                    <span className="text-xs text-muted-foreground tabular-nums">
-                      {formatDuration(step.durationSec)}
-                    </span>
-                  </div>
-                </motion.div>
+            <p className="text-xs text-muted-foreground/60 mb-3">
+              Drag to reorder before playing
+            </p>
+            <Reorder.Group
+              axis="y"
+              values={localSteps}
+              onReorder={setLocalSteps}
+              className="space-y-2 rounded-xl bg-secondary/20 p-3"
+            >
+              {localSteps.map((step, i) => (
+                <FlowDetailStep key={step._key} step={step} index={i} formatDuration={formatDuration} />
               ))}
-            </div>
+            </Reorder.Group>
           </div>
         )}
 
@@ -316,5 +296,71 @@ export function FlowDetail() {
         />
       )}
     </motion.div>
+  );
+}
+
+function FlowDetailStep({
+  step,
+  index,
+  formatDuration,
+}: {
+  step: ReorderStep;
+  index: number;
+  formatDuration: (sec: number) => string;
+}) {
+  const controls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={step}
+      dragListener={false}
+      dragControls={controls}
+      transition={{ type: 'spring', stiffness: 250, damping: 25 }}
+      className="flex items-center gap-3 rounded-lg bg-card/80 p-3"
+    >
+      <GripVertical
+        className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+        aria-hidden="true"
+        onPointerDown={(e) => controls.start(e)}
+      />
+
+      <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
+        <img
+          src={step.gesture?.media.poster || '/media/generic-gesture.png'}
+          className="w-full h-full object-cover"
+          alt=""
+        />
+        <div
+          className="absolute inset-0 mix-blend-color opacity-30"
+          style={{ backgroundColor: step.gesture ? getBodyAreaColor(step.gesture.bodyAreas) : 'var(--secondary)' }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md bg-black/10">
+          {index + 1}
+        </div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm truncate">
+          {step.title || step.gesture?.name || step.gestureId}
+        </p>
+        {step.notes && (
+          <p className="text-xs text-muted-foreground truncate">
+            {step.notes}
+          </p>
+        )}
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {step.side && step.side !== 'none' && (
+          <Badge
+            variant="outline"
+            className="text-[10px] uppercase px-1.5"
+          >
+            {step.side === 'left' ? 'L' : 'R'}
+          </Badge>
+        )}
+        <span className="text-xs text-muted-foreground tabular-nums">
+          {formatDuration(step.durationSec)}
+        </span>
+      </div>
+    </Reorder.Item>
   );
 }

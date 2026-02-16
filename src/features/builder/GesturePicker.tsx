@@ -171,6 +171,12 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
                       </span>
                     )}
                   </div>
+                  <p
+                    className="text-[11px] truncate capitalize mt-0.5"
+                    style={{ color: getBodyAreaColor(gesture.bodyAreas) }}
+                  >
+                    {gesture.bodyAreas.join(', ')}
+                  </p>
                   <div className="flex gap-1 mt-1 flex-wrap">
                     {gesture.tags.slice(0, 3).map(tag => (
                       <ColoredTag key={tag} tag={tag} />
