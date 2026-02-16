@@ -5,7 +5,6 @@
 export const BODY_AREA_COLORS: Record<string, string> = {
   head: 'oklch(0.55 0.12 250)',      // blue
   neck: 'oklch(0.55 0.12 220)',      // teal-blue
-  face: 'oklch(0.55 0.10 290)',      // lavender
   shoulders: 'oklch(0.55 0.12 190)', // teal
   back: 'oklch(0.55 0.12 155)',      // sage green
   chest: 'oklch(0.55 0.10 350)',     // warm rose

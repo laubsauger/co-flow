@@ -153,7 +153,7 @@ export function FlowList() {
                                             )}
                                             {tintColor && (
                                                 <div
-                                                    className="absolute inset-0 mix-blend-color opacity-50 pointer-events-none"
+                                                    className="absolute inset-0 mix-blend-color opacity-20 pointer-events-none"
                                                     style={{ backgroundColor: tintColor }}
                                                 />
                                             )}
