@@ -11,8 +11,10 @@ import { cn } from '@/lib/utils';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { ColoredTag } from '@/components/ColoredTag';
 import { useState, useMemo } from 'react';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { PlayerStep } from '@/lib/types/player';
+import type { Gesture } from '@/lib/types/gesture';
 
 const fuseInstance = new Fuse(allFlows, {
     keys: [
@@ -138,14 +140,24 @@ export function FlowList() {
                                 className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                             >
                                 {(() => {
-                                    const firstGesture = flow.steps[0] ? gestureMap.get(flow.steps[0].gestureId) : undefined;
+                                    const firstGesture = flow.steps[0] ? gestureMap.get(flow.steps[0].gestureId) as Gesture | undefined : undefined;
                                     const poster = flow.poster || firstGesture?.media.poster;
+                                    const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
                                     return (
-                                        <div className="h-28 bg-secondary relative overflow-hidden">
+                                        <div
+                                            className="h-28 relative overflow-hidden"
+                                            style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
+                                        >
                                             {poster ? (
                                                 <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
                                             ) : (
                                                 <PlaceholderImage />
+                                            )}
+                                            {tintColor && (
+                                                <div
+                                                    className="absolute inset-0 mix-blend-color opacity-50 pointer-events-none"
+                                                    style={{ backgroundColor: tintColor }}
+                                                />
                                             )}
                                             <div className="absolute top-2 right-2 flex items-center gap-1.5">
                                                 {isFlowFavorite(flow.id) && (

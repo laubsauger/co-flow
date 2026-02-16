@@ -9,10 +9,12 @@ import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
 import { useState, useMemo } from 'react';
 import type { PlayerStep } from '@/lib/types/player';
+import type { Gesture } from '@/lib/types/gesture';
 
 export function FlowDetail() {
   const { id } = useParams<{ id: string }>();
@@ -106,14 +108,24 @@ export function FlowDetail() {
     >
       {/* Hero Image */}
       {(() => {
-        const firstGesture = resolvedSteps[0]?.gesture;
+        const firstGesture = resolvedSteps[0]?.gesture as Gesture | undefined;
         const poster = flow.poster || firstGesture?.media.poster;
+        const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
         return (
-          <div className="w-full relative h-[30vh] sm:h-[40vh] overflow-hidden">
+          <div
+            className="w-full relative h-[30vh] sm:h-[40vh] overflow-hidden"
+            style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
+          >
             {poster ? (
               <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
             ) : (
               <PlaceholderImage />
+            )}
+            {tintColor && (
+              <div
+                className="absolute inset-0 mix-blend-color opacity-45 pointer-events-none"
+                style={{ backgroundColor: tintColor }}
+              />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
           </div>
@@ -242,7 +254,10 @@ export function FlowDetail() {
                   transition={{ ...springs.soft, delay: i * 0.04 }}
                   className="flex items-center gap-3 rounded-lg bg-card/80 p-3"
                 >
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-muted-foreground">
+                  <div
+                    className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    style={{ backgroundColor: step.gesture ? getBodyAreaColor((step.gesture as Gesture).bodyAreas) : 'var(--secondary)' }}
+                  >
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">

@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { springs } from '@/motion/tokens';
 import { cn } from '@/lib/utils';
 import { ColoredTag } from '@/components/ColoredTag';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { Gesture } from '@/lib/types/gesture';
 
@@ -125,10 +126,9 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
               aria-pressed={selectedBodyArea === area}
               className={cn(
                 "px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize",
-                selectedBodyArea === area
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                selectedBodyArea !== area && "bg-secondary text-secondary-foreground hover:bg-secondary/80"
               )}
+              style={selectedBodyArea === area ? { backgroundColor: getBodyAreaColor([area]), color: 'white' } : undefined}
             >
               {area}
             </button>
@@ -150,7 +150,11 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
                   count && "opacity-60"
                 )}
               >
-                <div className="flex-1 min-w-0">
+                <div
+                className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
+              />
+              <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm truncate">{gesture.name}</p>
                     {count && (

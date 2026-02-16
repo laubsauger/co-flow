@@ -5,6 +5,7 @@ import { springs } from '@/motion/tokens';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { resolveGestureMediaUrl } from './hooks/resolve-media-url';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import type { PlayerStep, PlayerStatus } from '@/lib/types/player';
 
 interface CurrentStepCardProps {
@@ -67,7 +68,10 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
       className="w-full max-w-sm bg-card border rounded-3xl shadow-xl overflow-hidden flex flex-col aspect-[3/4]"
     >
       {/* Media area — poster or video */}
-      <div className="w-full h-1/2 bg-muted relative">
+      <div
+        className="w-full h-1/2 relative"
+        style={{ backgroundColor: getBodyAreaColor(step.gesture.bodyAreas) }}
+      >
         {/* Poster (always rendered as fallback) */}
         {posterSrc && (
           <img
@@ -79,6 +83,11 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
             alt={step.gesture.name}
           />
         )}
+        {/* Body area tint */}
+        <div
+          className="absolute inset-0 mix-blend-color opacity-35 pointer-events-none"
+          style={{ backgroundColor: getBodyAreaColor(step.gesture.bodyAreas) }}
+        />
 
         {/* Lazy-loaded video overlay — key forces remount on step change */}
         <AnimatePresence>

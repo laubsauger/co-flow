@@ -7,6 +7,7 @@ import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { ColoredTag } from '@/components/ColoredTag';
 import { useState, useMemo } from 'react';
 import { useUserData } from '@/lib/stores/user-data';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { Gesture } from '@/lib/types/gesture';
 
@@ -159,10 +160,9 @@ export function GestureList() {
                             aria-pressed={selectedBodyArea === area}
                             className={cn(
                                 "px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap capitalize",
-                                selectedBodyArea === area
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                selectedBodyArea !== area && "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                             )}
+                            style={selectedBodyArea === area ? { backgroundColor: getBodyAreaColor([area]), color: 'white' } : undefined}
                         >
                             {area}
                         </button>
@@ -177,7 +177,10 @@ export function GestureList() {
                             layoutId={`card-${gesture.id}`}
                             className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                         >
-                            <div className="h-32 bg-secondary relative overflow-hidden">
+                            <div
+                                className="h-32 relative overflow-hidden"
+                                style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
+                            >
                                 {gesture.media.poster ? (
                                     <motion.img
                                         layoutId={`image-${gesture.id}`}
@@ -188,6 +191,10 @@ export function GestureList() {
                                 ) : (
                                     <PlaceholderImage />
                                 )}
+                                <div
+                                    className="absolute inset-0 mix-blend-color opacity-50 pointer-events-none"
+                                    style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
+                                />
                                 <div className="absolute top-2 right-2 flex items-center gap-1.5">
                                     {isGestureFavorite(gesture.id) && (
                                         <div className="bg-black/50 backdrop-blur-sm rounded-full p-1">

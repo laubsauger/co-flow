@@ -5,6 +5,7 @@ import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Play, Timer, Heart, AlertTriangle } from 'lucide-react';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
@@ -52,6 +53,7 @@ export function GestureDetail() {
             <motion.div
                 layoutId={`card-${gesture.id}`}
                 className="w-full relative h-[40vh] sm:h-[50vh] overflow-hidden"
+                style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
             >
                 {gesture.media.poster ? (
                     <motion.img
@@ -63,6 +65,10 @@ export function GestureDetail() {
                 ) : (
                     <PlaceholderImage />
                 )}
+                <div
+                    className="absolute inset-0 mix-blend-color opacity-40 pointer-events-none"
+                    style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
 
                 <div className="absolute top-4 left-4 z-10">
@@ -156,10 +162,16 @@ export function GestureDetail() {
 
                 {/* Technical Details */}
                 <div className="text-sm">
-                    <h3 className="font-medium text-muted-foreground mb-1">Body Areas</h3>
-                    <div className="flex flex-wrap gap-1">
+                    <h3 className="font-medium text-muted-foreground mb-2">Body Areas</h3>
+                    <div className="flex flex-wrap gap-1.5">
                         {gesture.bodyAreas.map(area => (
-                            <span key={area} className="capitalize">{area}</span>
+                            <span
+                                key={area}
+                                className="capitalize text-xs font-medium px-2.5 py-1 rounded-full text-white"
+                                style={{ backgroundColor: getBodyAreaColor([area]) }}
+                            >
+                                {area}
+                            </span>
                         ))}
                     </div>
                 </div>

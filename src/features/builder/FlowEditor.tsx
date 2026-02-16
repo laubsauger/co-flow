@@ -18,6 +18,7 @@ import {
   Check,
 } from 'lucide-react';
 import { springs } from '@/motion/tokens';
+import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { GesturePicker } from './GesturePicker';
 import type { FlowStep } from '@/lib/types/flow';
 import type { PlayerStep } from '@/lib/types/player';
@@ -285,7 +286,10 @@ function StepItem({
       <div className="flex items-center gap-2 p-3">
         <GripVertical className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing" aria-hidden="true" />
 
-        <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-muted-foreground flex-shrink-0">
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+          style={{ backgroundColor: gesture ? getBodyAreaColor(gesture.bodyAreas) : 'var(--secondary)' }}
+        >
           {index + 1}
         </div>
 
