@@ -8,6 +8,9 @@ import { ArrowLeft, Play, Timer, Heart, AlertTriangle } from 'lucide-react';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
+import { PlaceholderImage } from '@/components/PlaceholderImage';
+import { ColoredTag } from '@/components/ColoredTag';
+import { TranscriptSection } from './TranscriptSection';
 
 export function GestureDetail() {
     const { id } = useParams<{ id: string }>();
@@ -58,9 +61,7 @@ export function GestureDetail() {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className="w-full h-full bg-secondary flex items-center justify-center text-muted-foreground">
-                        No Image
-                    </div>
+                    <PlaceholderImage />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
 
@@ -81,9 +82,7 @@ export function GestureDetail() {
                     </motion.h1>
                     <div className="flex gap-2 mb-2 flex-wrap">
                         {gesture.tags.map(tag => (
-                            <span key={tag} className="text-xs backdrop-blur-md bg-background/30 px-2 py-1 rounded-full border border-white/10 text-foreground/80 font-medium">
-                                {tag}
-                            </span>
+                            <ColoredTag key={tag} tag={tag} size="md" className="backdrop-blur-md" />
                         ))}
                     </div>
                     <div className="flex items-center gap-4 text-sm font-medium text-foreground/70">
@@ -164,6 +163,14 @@ export function GestureDetail() {
                         ))}
                     </div>
                 </div>
+
+                {/* Transcript */}
+                {gesture.media.transcript && (
+                    <TranscriptSection
+                        gestureId={gesture.id}
+                        transcriptFile={gesture.media.transcript}
+                    />
+                )}
             </div>
 
             {hasContraindications && (

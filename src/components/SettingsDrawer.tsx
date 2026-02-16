@@ -5,17 +5,24 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { useUserData } from '@/lib/stores/user-data';
+import { useUserData, type ThemeMode } from '@/lib/stores/user-data';
 import { cn } from '@/lib/utils';
-import { Shield, Eye, Info } from 'lucide-react';
+import { Shield, Eye, Info, Sun, Moon, Monitor } from 'lucide-react';
 
 interface SettingsDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+const themeOptions: { mode: ThemeMode; icon: typeof Sun; label: string }[] = [
+  { mode: 'system', icon: Monitor, label: 'System' },
+  { mode: 'light', icon: Sun, label: 'Light' },
+  { mode: 'dark', icon: Moon, label: 'Dark' },
+];
+
 export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
-  const { reducedMotion, toggleReducedMotion } = useUserData();
+  const { reducedMotion, toggleReducedMotion, themeMode, setThemeMode } =
+    useUserData();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -25,8 +32,33 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
           <SheetDescription>Preferences and safety information</SheetDescription>
         </SheetHeader>
 
-        <div className="px-4 space-y-6">
-          {/* Preferences */}
+        <div className="px-4 pb-6 space-y-6">
+          {/* Theme */}
+          <section>
+            <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+              <Sun className="w-4 h-4" />
+              Appearance
+            </h3>
+            <div className="flex gap-2">
+              {themeOptions.map(({ mode, icon: Icon, label }) => (
+                <button
+                  key={mode}
+                  onClick={() => setThemeMode(mode)}
+                  className={cn(
+                    'flex-1 flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-colors',
+                    themeMode === mode
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="text-xs font-medium">{label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Accessibility */}
           <section>
             <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
               <Eye className="w-4 h-4" />
@@ -44,7 +76,7 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
                 aria-checked={reducedMotion}
                 onClick={toggleReducedMotion}
                 className={cn(
-                  'relative h-6 w-11 rounded-full transition-colors',
+                  'relative h-6 w-11 rounded-full transition-colors flex-shrink-0',
                   reducedMotion ? 'bg-primary' : 'bg-secondary'
                 )}
               >
@@ -70,7 +102,7 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
                 educational and self-care purposes only.
               </p>
               <p>
-                This app is <strong>not a substitute</strong> for professional
+                This app is <strong className="text-foreground">not a substitute</strong> for professional
                 medical advice, diagnosis, or treatment. Always consult a
                 qualified healthcare provider before beginning any new
                 bodywork practice.

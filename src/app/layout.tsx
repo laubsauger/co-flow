@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { ResumePrompt } from '@/features/player/ResumePrompt';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { startSnapshotLoop } from '@/lib/stores/session-resume';
+import { useTheme } from '@/lib/hooks/use-theme';
 
 const navItems = [
   { to: '/', icon: Hand, label: 'Gestures' },
@@ -15,6 +16,9 @@ const navItems = [
 export function AppLayout() {
   const location = useLocation();
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Apply dark/light theme
+  useTheme();
 
   // Start resume snapshot loop on mount
   useEffect(() => {

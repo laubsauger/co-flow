@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { allGestures } from '@/content/generated';
 import { cn } from '@/lib/utils';
 import { Search, Heart, SlidersHorizontal } from 'lucide-react';
+import { PlaceholderImage } from '@/components/PlaceholderImage';
+import { ColoredTag } from '@/components/ColoredTag';
 import { useState, useMemo } from 'react';
 import { useUserData } from '@/lib/stores/user-data';
 import Fuse from 'fuse.js';
@@ -181,9 +183,7 @@ export function GestureList() {
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                        No Image
-                                    </div>
+                                    <PlaceholderImage />
                                 )}
                                 <div className="absolute top-2 right-2 flex items-center gap-1.5">
                                     {isGestureFavorite(gesture.id) && (
@@ -205,9 +205,7 @@ export function GestureList() {
                                 </p>
                                 <div className="mt-3 flex gap-1 flex-wrap">
                                     {gesture.tags.slice(0, 3).map(tag => (
-                                        <span key={tag} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground">
-                                            {tag}
-                                        </span>
+                                        <ColoredTag key={tag} tag={tag} />
                                     ))}
                                 </div>
                             </div>

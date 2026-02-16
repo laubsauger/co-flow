@@ -23,7 +23,7 @@ interface UserFlowsState {
   getFlow: (id: string) => Flow | undefined;
 }
 
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text
     .toLowerCase()
     .replace(/\s+/g, '-')
@@ -32,7 +32,7 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-function generateId(name: string, existing: Flow[]): string {
+export function generateId(name: string, existing: Flow[]): string {
   const base = slugify(name) || 'flow';
   const ids = new Set(existing.map((f) => f.id));
   if (!ids.has(base)) return base;

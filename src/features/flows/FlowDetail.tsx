@@ -4,6 +4,8 @@ import { allFlows, allGestures, gestureMap } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle } from 'lucide-react';
+import { ColoredTag } from '@/components/ColoredTag';
+import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
@@ -102,14 +104,30 @@ export function FlowDetail() {
       transition={springs.soft}
       className="min-h-screen bg-background pb-24"
     >
+      {/* Hero Image */}
+      {(() => {
+        const firstGesture = resolvedSteps[0]?.gesture;
+        const poster = flow.poster || firstGesture?.media.poster;
+        return (
+          <div className="w-full relative h-[30vh] sm:h-[40vh] overflow-hidden">
+            {poster ? (
+              <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
+            ) : (
+              <PlaceholderImage />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
+          </div>
+        );
+      })()}
+
       {/* Header */}
-      <div className="bg-secondary/30 px-4 pt-4 pb-6">
+      <div className="px-4 pb-6 -mt-16 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <Link to="/flows" aria-label="Back to flows">
               <Button
                 variant="ghost"
-                className="rounded-full w-10 h-10 p-0"
+                className="rounded-full w-10 h-10 p-0 bg-background/50 hover:bg-background/80 backdrop-blur-md"
               >
                 <ArrowLeft className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -159,9 +177,7 @@ export function FlowDetail() {
           {/* Tags */}
           <div className="flex gap-1.5 flex-wrap">
             {flow.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs capitalize">
-                {tag}
-              </Badge>
+              <ColoredTag key={tag} tag={tag} size="md" />
             ))}
           </div>
         </div>
@@ -217,14 +233,14 @@ export function FlowDetail() {
             <h3 className="font-medium text-sm text-muted-foreground mb-3">
               Sequence
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-2 rounded-xl bg-secondary/20 p-3">
               {resolvedSteps.map((step, i) => (
                 <motion.div
                   key={`${step.gestureId}-${i}`}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ ...springs.soft, delay: i * 0.04 }}
-                  className="flex items-center gap-3 rounded-lg border bg-card p-3"
+                  className="flex items-center gap-3 rounded-lg bg-card/80 p-3"
                 >
                   <div className="flex-shrink-0 w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-muted-foreground">
                     {i + 1}

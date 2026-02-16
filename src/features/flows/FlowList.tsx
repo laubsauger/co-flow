@@ -8,6 +8,8 @@ import { useUserFlows } from '@/lib/stores/user-flows';
 import { springs } from '@/motion/tokens';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { PlaceholderImage } from '@/components/PlaceholderImage';
+import { ColoredTag } from '@/components/ColoredTag';
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
 import type { PlayerStep } from '@/lib/types/player';
@@ -132,23 +134,41 @@ export function FlowList() {
                                 transition={{ ...springs.soft, delay: i * 0.05 }}
                                 className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                             >
+                                {(() => {
+                                    const firstGesture = flow.steps[0] ? gestureMap.get(flow.steps[0].gestureId) : undefined;
+                                    const poster = flow.poster || firstGesture?.media.poster;
+                                    return (
+                                        <div className="h-28 bg-secondary relative overflow-hidden">
+                                            {poster ? (
+                                                <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <PlaceholderImage />
+                                            )}
+                                            <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                                {isFlowFavorite(flow.id) && (
+                                                    <div className="bg-black/50 backdrop-blur-sm rounded-full p-1">
+                                                        <Heart className="w-3 h-3 text-red-400 fill-red-400" />
+                                                    </div>
+                                                )}
+                                                <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                                                    {formatDuration(flow.steps)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                                 <div className="p-4">
                                     <div className="flex items-start justify-between mb-1">
                                         <h3 className="font-semibold leading-tight">
                                             {flow.name}
                                         </h3>
-                                        <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
-                                            {isFlowFavorite(flow.id) && (
-                                                <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" />
-                                            )}
-                                            <button
-                                                onClick={(e) => handlePlayFlow(e, flow.id, false)}
-                                                aria-label={`Play ${flow.name}`}
-                                                className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center hover:scale-105 transition-transform"
-                                            >
-                                                <Play className="w-4 h-4 fill-current ml-0.5" />
-                                            </button>
-                                        </div>
+                                        <button
+                                            onClick={(e) => handlePlayFlow(e, flow.id, false)}
+                                            aria-label={`Play ${flow.name}`}
+                                            className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center hover:scale-105 transition-transform flex-shrink-0 ml-3"
+                                        >
+                                            <Play className="w-4 h-4 fill-current ml-0.5" />
+                                        </button>
                                     </div>
 
                                     <p className="text-sm text-muted-foreground line-clamp-1 mb-3">
@@ -158,19 +178,13 @@ export function FlowList() {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                             <span className="flex items-center gap-1">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                {formatDuration(flow.steps)}
-                                            </span>
-                                            <span className="flex items-center gap-1">
                                                 <Layers className="w-3.5 h-3.5" />
                                                 {flow.steps.length} steps
                                             </span>
                                         </div>
                                         <div className="flex gap-1">
-                                            {flow.tags.slice(0, 2).map(tag => (
-                                                <span key={tag} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground">
-                                                    {tag}
-                                                </span>
+                                            {flow.tags.slice(0, 3).map(tag => (
+                                                <ColoredTag key={tag} tag={tag} />
                                             ))}
                                         </div>
                                     </div>

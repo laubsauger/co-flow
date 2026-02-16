@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePlayerStore } from '@/lib/stores/player';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, SkipBack, SkipForward, X, Eye, Smartphone } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, X, Eye, Smartphone, Captions } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/motion/tokens';
@@ -11,6 +11,7 @@ import { CurrentStepCard } from './CurrentStepCard';
 import { NextStepCard } from './NextStepCard';
 import { ProgressOverview } from './ProgressOverview';
 import { MediaStatus } from './MediaStatus';
+import { CaptionOverlay } from './CaptionOverlay';
 import { useWakeLock } from './useWakeLock';
 import { useAudioChainer } from './hooks/use-audio-chainer';
 import { startSnapshotLoop } from '@/lib/stores/session-resume';
@@ -36,6 +37,7 @@ export function PlayerView() {
     const { isActive: wakeLockActive } = useWakeLock(
         wakeLockEnabled && status === 'playing'
     );
+    const [captionsEnabled, setCaptionsEnabled] = useState(false);
 
     // Audio chaining engine
     useAudioChainer();
@@ -146,6 +148,17 @@ export function PlayerView() {
                     >
                         <Smartphone className="w-4 h-4" />
                     </Button>
+                    {currentStep?.gesture.media.captions && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn('h-8 w-8', captionsEnabled && 'bg-primary/10 text-primary')}
+                            onClick={() => setCaptionsEnabled((v) => !v)}
+                            aria-label={captionsEnabled ? 'Hide captions' : 'Show captions'}
+                        >
+                            <Captions className="w-4 h-4" />
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -177,6 +190,16 @@ export function PlayerView() {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Captions overlay */}
+            {captionsEnabled && (
+                <CaptionOverlay
+                    gestureId={currentStep.gesture.id}
+                    captionsFile={currentStep.gesture.media.captions}
+                    elapsedSec={elapsedTime}
+                    glanceMode={glanceMode}
+                />
+            )}
 
             {/* Screen reader live region for step changes */}
             <div aria-live="polite" className="sr-only">

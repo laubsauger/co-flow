@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from '@/components/ui/sheet';
 import { Search, Plus, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -44,10 +45,11 @@ export function GesturePicker({ open, onClose, onSelect }: GesturePickerProps) {
       <SheetContent side="bottom" className="h-[85vh] flex flex-col">
         <SheetHeader>
           <SheetTitle>Add Gesture</SheetTitle>
+          <SheetDescription>Search and pick a gesture to add to your flow.</SheetDescription>
         </SheetHeader>
 
-        <div className="relative mt-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative px-4">
+          <Search className="absolute left-7 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search gestures..."
             value={search}
@@ -56,7 +58,7 @@ export function GesturePicker({ open, onClose, onSelect }: GesturePickerProps) {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto mt-3 -mx-2 px-2 space-y-1.5">
+        <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1.5">
           {filtered.map((gesture, i) => (
             <motion.button
               key={gesture.id}
