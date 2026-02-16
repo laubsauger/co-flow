@@ -1,13 +1,21 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Reorder, motion, AnimatePresence, useDragControls } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useUserFlows } from '@/lib/stores/user-flows';
-import { gestureMap } from '@/content/generated';
+import { gestureMap, allGestures, allFlows } from '@/content/generated';
 import { usePlayerStore } from '@/lib/stores/player';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from '@/components/ui/command';
 import {
   ArrowLeft,
   Plus,
@@ -20,6 +28,7 @@ import {
 } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
+import { cn } from '@/lib/utils';
 import { GesturePicker } from './GesturePicker';
 import type { FlowStep } from '@/lib/types/flow';
 import type { PlayerStep } from '@/lib/types/player';
@@ -32,9 +41,18 @@ function keySteps(steps: FlowStep[]): KeyedStep[] {
   return steps.map((s) => ({ ...s, _key: `s${++dragKeySeq}` }));
 }
 
+// All unique tags from content (gestures + flows), computed once
+const ALL_CONTENT_TAGS = Array.from(
+  new Set([
+    ...allGestures.flatMap((g) => g.tags),
+    ...allFlows.flatMap((f) => f.tags),
+  ])
+).sort();
+
 export function FlowEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     getFlow,
     updateFlow,
@@ -46,7 +64,9 @@ export function FlowEditor() {
   const { loadFlow, play } = usePlayerStore();
 
   const flow = getFlow(id ?? '');
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(
+    () => !!(location.state as Record<string, unknown> | null)?.restorePicker
+  );
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(flow?.name ?? '');
 
@@ -100,6 +120,40 @@ export function FlowEditor() {
     };
   }, [id]);
 
+  // Infer equipment from gestures in the flow
+  const inferredEquipment = useMemo(() => {
+    const steps = flow?.steps ?? [];
+    const equipMap = new Map<string, boolean>(); // name → optional
+    for (const step of steps) {
+      const gesture = gestureMap.get(step.gestureId);
+      gesture?.equipment?.forEach((e) => {
+        const existing = equipMap.get(e.name);
+        if (existing === undefined) {
+          equipMap.set(e.name, e.optional ?? false);
+        } else if (!e.optional) {
+          equipMap.set(e.name, false); // if any gesture requires it, it's required
+        }
+      });
+    }
+    return Array.from(equipMap.entries())
+      .sort((a, b) => {
+        if (a[1] !== b[1]) return a[1] ? 1 : -1; // required first
+        return a[0].localeCompare(b[0]);
+      })
+      .map(([name, optional]) => ({ name, optional }));
+  }, [flow?.steps]);
+
+  // Infer body areas from gestures in the flow
+  const bodyAreas = useMemo(() => {
+    const steps = flow?.steps ?? [];
+    const areas = new Set<string>();
+    for (const step of steps) {
+      const gesture = gestureMap.get(step.gestureId);
+      gesture?.bodyAreas?.forEach((a) => areas.add(a));
+    }
+    return Array.from(areas).sort();
+  }, [flow?.steps]);
+
   if (!flow || !id) {
     return (
       <div className="flex flex-col items-center justify-center h-screen space-y-4">
@@ -124,6 +178,11 @@ export function FlowEditor() {
       durationSec: gesture.durationDefaults.defaultSec,
     };
     addStep(id, step);
+  };
+
+  const handlePreviewGesture = (gesture: Gesture) => {
+    setPickerOpen(false);
+    navigate(`/gestures/${gesture.id}`, { state: { returnTo: `/builder/${id}` } });
   };
 
   const handleReorder = (newOrder: KeyedStep[]) => {
@@ -219,7 +278,7 @@ export function FlowEditor() {
         </div>
       </div>
 
-      {/* Description & Tags */}
+      {/* Description, Tags, Focus & Gear */}
       <div className="px-4 pt-3 pb-1 max-w-2xl mx-auto space-y-2">
         <Input
           value={flow.description}
@@ -227,6 +286,8 @@ export function FlowEditor() {
           placeholder="Add a description..."
           className="h-8 text-xs"
         />
+
+        {/* Tags */}
         <div className="flex flex-wrap items-center gap-1.5">
           {flow.tags.map(tag => (
             <button
@@ -238,11 +299,57 @@ export function FlowEditor() {
               <X className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           ))}
-          <TagInput
-            existingTags={flow.tags}
+          <TagCombobox
+            selectedTags={flow.tags}
             onAdd={(tag) => updateFlow(id, { tags: [...flow.tags, tag] })}
           />
         </div>
+
+        {/* Focus & Gear row */}
+        {(bodyAreas.length > 0 || inferredEquipment.length > 0) && (
+          <div className="flex items-center gap-4 text-sm flex-wrap">
+            {/* Focus — body area circles */}
+            {bodyAreas.length > 0 && (
+              <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
+                <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Focus</span>
+                <div className="flex -space-x-1.5 hover:space-x-0.5 transition-all">
+                  {bodyAreas.map((area) => (
+                    <div
+                      key={area}
+                      className="w-5 h-5 rounded-full ring-2 ring-background relative group"
+                      style={{ backgroundColor: getBodyAreaColor([area]) }}
+                      title={area}
+                    >
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-popover text-popover-foreground text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-sm z-50 capitalize">
+                        {area}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Gear — read-only from gestures */}
+            {inferredEquipment.length > 0 && (
+              <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
+                <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Gear</span>
+                <div className="flex gap-1.5">
+                  {inferredEquipment.map((e) => (
+                    <span
+                      key={e.name}
+                      className={cn(
+                        "text-xs capitalize",
+                        e.optional ? "text-muted-foreground" : "font-medium text-foreground"
+                      )}
+                    >
+                      {e.name}{e.optional ? '*' : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Steps */}
@@ -298,9 +405,87 @@ export function FlowEditor() {
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleAddGesture}
+        onPreview={handlePreviewGesture}
         currentStepGestureIds={flow.steps.map(s => s.gestureId)}
       />
     </div>
+  );
+}
+
+function TagCombobox({
+  selectedTags,
+  onAdd,
+}: {
+  selectedTags: string[];
+  onAdd: (tag: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const selectedSet = useMemo(() => new Set(selectedTags), [selectedTags]);
+
+  const availableTags = useMemo(
+    () => ALL_CONTENT_TAGS.filter((t) => !selectedSet.has(t)),
+    [selectedSet]
+  );
+
+  const trimmed = search.trim().toLowerCase();
+  const isNewTag = trimmed.length > 0
+    && !ALL_CONTENT_TAGS.includes(trimmed)
+    && !selectedSet.has(trimmed);
+
+  const handleSelect = (tag: string) => {
+    onAdd(tag);
+    setSearch('');
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="px-2 py-0.5 rounded text-[10px] font-medium bg-secondary text-muted-foreground hover:text-foreground transition-colors">
+          + tag
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-52 p-0" align="start">
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search tags..."
+            value={search}
+            onValueChange={setSearch}
+          />
+          <CommandList>
+            <CommandEmpty>
+              {trimmed.length > 0
+                ? 'No matching tags'
+                : 'Type to search or create'}
+            </CommandEmpty>
+            <CommandGroup>
+              {availableTags
+                .filter((t) => !trimmed || t.includes(trimmed))
+                .map((tag) => (
+                  <CommandItem
+                    key={tag}
+                    value={tag}
+                    onSelect={() => handleSelect(tag)}
+                  >
+                    <ColoredTag tag={tag} />
+                  </CommandItem>
+                ))}
+              {isNewTag && (
+                <CommandItem
+                  value={`create-${trimmed}`}
+                  onSelect={() => handleSelect(trimmed)}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Create &ldquo;{trimmed}&rdquo;
+                </CommandItem>
+              )}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -320,21 +505,70 @@ function StepItem({
   const gesture = gestureMap.get(item.gestureId);
   const [expanded, setExpanded] = useState(false);
   const controls = useDragControls();
+  const longPressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [grabbing, setGrabbing] = useState(false);
+
+  useEffect(() => {
+    return () => clearTimeout(longPressTimer.current);
+  }, []);
+
+  const handleGripPointerDown = (e: React.PointerEvent) => {
+    const startY = e.clientY;
+    const storedEvent = e;
+
+    const cancel = () => {
+      clearTimeout(longPressTimer.current);
+      setGrabbing(false);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+
+    const onMove = (moveE: PointerEvent) => {
+      if (Math.abs(moveE.clientY - startY) > 5) cancel();
+    };
+
+    const onUp = () => cancel();
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+
+    longPressTimer.current = setTimeout(() => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      setGrabbing(true);
+      controls.start(storedEvent);
+    }, 200);
+  };
 
   return (
     <Reorder.Item
       value={item}
+      layout="position"
       dragListener={false}
       dragControls={controls}
-      transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-      className="rounded-lg border bg-card shadow-sm"
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className={cn(
+        "rounded-lg border bg-card shadow-sm will-change-transform",
+        grabbing && "shadow-lg ring-2 ring-primary/20 z-10"
+      )}
+      onDragEnd={() => setGrabbing(false)}
     >
       <div className="flex items-center gap-2 p-3">
-        <GripVertical
-          className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
-          aria-hidden="true"
-          onPointerDown={(e) => controls.start(e)}
-        />
+        <div
+          className="flex-shrink-0 p-1.5 -m-1.5 cursor-grab active:cursor-grabbing touch-none"
+          onPointerDown={handleGripPointerDown}
+        >
+          <GripVertical
+            className={cn(
+              "w-4 h-4 transition-colors",
+              grabbing ? "text-primary" : "text-muted-foreground"
+            )}
+            aria-hidden="true"
+          />
+        </div>
 
         <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
           <img
@@ -372,9 +606,16 @@ function StepItem({
 
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {item.side && item.side !== 'none' && (
-            <Badge variant="outline" className="text-[10px] uppercase px-1.5">
+            <span
+              className={cn(
+                "text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full border",
+                item.side === 'left'
+                  ? "bg-blue-500/15 text-blue-500 border-blue-500/25"
+                  : "bg-amber-500/15 text-amber-500 border-amber-500/25"
+              )}
+            >
               {item.side === 'left' ? 'L' : 'R'}
-            </Badge>
+            </span>
           )}
           <span className="text-xs text-muted-foreground tabular-nums">
             {item.durationSec}s
@@ -465,45 +706,5 @@ function StepItem({
         )}
       </AnimatePresence>
     </Reorder.Item>
-  );
-}
-
-function TagInput({ existingTags, onAdd }: { existingTags: string[]; onAdd: (tag: string) => void }) {
-  const [value, setValue] = useState('');
-  const [editing, setEditing] = useState(false);
-
-  const handleSubmit = () => {
-    const tag = value.trim().toLowerCase();
-    if (tag && !existingTags.includes(tag)) {
-      onAdd(tag);
-    }
-    setValue('');
-    setEditing(false);
-  };
-
-  if (!editing) {
-    return (
-      <button
-        onClick={() => setEditing(true)}
-        className="px-2 py-0.5 rounded text-[10px] font-medium bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-      >
-        + tag
-      </button>
-    );
-  }
-
-  return (
-    <input
-      autoFocus
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={handleSubmit}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') handleSubmit();
-        if (e.key === 'Escape') { setValue(''); setEditing(false); }
-      }}
-      placeholder="tag name"
-      className="w-20 px-1.5 py-0.5 rounded text-[10px] bg-secondary border border-input outline-none focus:ring-1 focus:ring-ring"
-    />
   );
 }

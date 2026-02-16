@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { allGestures } from '@/content/generated';
 import { Input } from '@/components/ui/input';
 import {
@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Search, Plus, Clock, Zap } from 'lucide-react';
+import { Search, Plus, Clock, Zap, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { springs } from '@/motion/tokens';
 import { cn } from '@/lib/utils';
@@ -17,16 +17,29 @@ import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { Gesture } from '@/lib/types/gesture';
 
+const PICKER_STATE_KEY = 'gesture-picker-state';
+
 interface GesturePickerProps {
   open: boolean;
   onClose: () => void;
   onSelect: (gesture: Gesture) => void;
+  onPreview?: (gesture: Gesture) => void;
   currentStepGestureIds: string[];
 }
 
-export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }: GesturePickerProps) {
-  const [search, setSearch] = useState('');
-  const [selectedBodyArea, setSelectedBodyArea] = useState<string | null>(null);
+export function GesturePicker({ open, onClose, onSelect, onPreview, currentStepGestureIds }: GesturePickerProps) {
+  const [search, setSearch] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PICKER_STATE_KEY);
+      return saved ? (JSON.parse(saved).search ?? '') : '';
+    } catch { return ''; }
+  });
+  const [selectedBodyArea, setSelectedBodyArea] = useState<string | null>(() => {
+    try {
+      const saved = sessionStorage.getItem(PICKER_STATE_KEY);
+      return saved ? (JSON.parse(saved).selectedBodyArea ?? null) : null;
+    } catch { return null; }
+  });
 
   const bodyAreas = useMemo(() => {
     const areas = new Set<string>();
@@ -76,11 +89,21 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
     return results;
   }, [search, selectedBodyArea, fuse, usageCounts]);
 
+  // Persist search/filter state to sessionStorage for restore after preview
+  useEffect(() => {
+    if (search || selectedBodyArea) {
+      sessionStorage.setItem(PICKER_STATE_KEY, JSON.stringify({ search, selectedBodyArea }));
+    } else {
+      sessionStorage.removeItem(PICKER_STATE_KEY);
+    }
+  }, [search, selectedBodyArea]);
+
   const handleSelect = (gesture: Gesture) => {
     onSelect(gesture);
     onClose();
     setSearch('');
     setSelectedBodyArea(null);
+    sessionStorage.removeItem(PICKER_STATE_KEY);
   };
 
   return (
@@ -196,6 +219,18 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
                     <Clock className="w-3 h-3" />
                     {gesture.durationDefaults.defaultSec}s
                   </span>
+                  {onPreview && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onPreview(gesture);
+                      }}
+                      aria-label={`Preview ${gesture.name}`}
+                      className="p-1 rounded-md hover:bg-secondary transition-colors"
+                    >
+                      <Eye className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  )}
                   <Plus className="w-4 h-4 text-primary" />
                 </div>
               </motion.button>

@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,9 @@ export function GestureDetail() {
     useScrollTop();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const { loadGesture, play } = usePlayerStore();
+    const returnTo = (location.state as Record<string, unknown> | null)?.returnTo as string | undefined;
     const { toggleFavoriteGesture, isGestureFavorite } = useUserData();
     const [showSafetyCheck, setShowSafetyCheck] = useState(false);
 
@@ -63,8 +65,9 @@ export function GestureDetail() {
                 poster={gesture.media.poster}
                 alt={gesture.name}
                 bodyAreas={gesture.bodyAreas}
-                backTo="/gestures"
-                backLabel="Back to library"
+                backTo={returnTo ?? '/gestures'}
+                backLabel={returnTo ? 'Back to flow' : 'Back to library'}
+                backState={returnTo ? { restorePicker: true } : undefined}
             >
                 <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
                     {gesture.name}

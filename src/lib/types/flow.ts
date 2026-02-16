@@ -1,3 +1,5 @@
+import type { EquipmentItem } from './gesture';
+
 // Flow Interface
 export interface FlowStep {
     gestureId: string;
@@ -17,6 +19,7 @@ export interface Flow {
     name: string;
     description: string;
     tags: string[];
+    equipment?: EquipmentItem[];
     steps: FlowStep[];
 
     // step vs compiled? 

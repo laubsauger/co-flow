@@ -3,7 +3,7 @@ import { motion, Reorder, useDragControls } from 'framer-motion';
 import { allFlows, gestureMap } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight, Droplets, RectangleHorizontal } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
 import { DetailHero } from '@/components/DetailHero';
 import { usePlayerStore } from '@/lib/stores/player';
@@ -13,7 +13,7 @@ import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
 import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
@@ -238,17 +238,23 @@ export function FlowDetail() {
           {equipment.length > 0 && (
             <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
               <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Gear</span>
-              <div className="flex gap-1.5">
+              <div className="flex gap-1.5 items-center">
                 {equipment.map((e) => (
-                  <span
-                    key={e.name}
-                    className={cn(
-                      "text-xs capitalize",
-                      e.optional ? "text-muted-foreground" : "font-medium text-foreground"
-                    )}
-                  >
-                    {e.name}{e.optional ? '*' : ''}
-                  </span>
+                  <div key={e.name} className="flex items-center gap-1">
+                    {e.name === 'massage oil' ? (
+                      <Droplets className="w-3 h-3 text-muted-foreground" />
+                    ) : e.name === 'mat' ? (
+                      <RectangleHorizontal className="w-3 h-3 text-muted-foreground" />
+                    ) : null}
+                    <span
+                      className={cn(
+                        "text-xs capitalize",
+                        e.optional ? "text-muted-foreground" : "font-medium text-foreground"
+                      )}
+                    >
+                      {e.name}{e.optional ? '*' : ''}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
@@ -316,7 +322,7 @@ export function FlowDetail() {
               axis="y"
               values={localSteps}
               onReorder={setLocalSteps}
-              className="space-y-2 rounded-xl bg-secondary/20 p-3"
+              className="space-y-2 rounded-xl bg-secondary/20 p-3 overscroll-contain"
             >
               {localSteps.map((step, i) => (
                 <FlowDetailStep key={step._key} step={step} index={i} formatDuration={formatDuration} />
@@ -371,20 +377,69 @@ function FlowDetailStep({
   formatDuration: (sec: number) => string;
 }) {
   const controls = useDragControls();
+  const longPressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [grabbing, setGrabbing] = useState(false);
+
+  useEffect(() => {
+    return () => clearTimeout(longPressTimer.current);
+  }, []);
+
+  const handleGripPointerDown = (e: React.PointerEvent) => {
+    const startY = e.clientY;
+    const storedEvent = e;
+
+    const cancel = () => {
+      clearTimeout(longPressTimer.current);
+      setGrabbing(false);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+
+    const onMove = (moveE: PointerEvent) => {
+      if (Math.abs(moveE.clientY - startY) > 5) cancel();
+    };
+
+    const onUp = () => cancel();
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+
+    longPressTimer.current = setTimeout(() => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      setGrabbing(true);
+      controls.start(storedEvent);
+    }, 200);
+  };
 
   return (
     <Reorder.Item
       value={step}
+      layout="position"
       dragListener={false}
       dragControls={controls}
-      transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-      className="flex items-center gap-3 rounded-lg bg-card/80 p-3"
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className={cn(
+        "flex items-center gap-3 rounded-lg bg-card/80 p-3 will-change-transform",
+        grabbing && "shadow-lg ring-2 ring-primary/20 z-10"
+      )}
+      onDragEnd={() => setGrabbing(false)}
     >
-      <GripVertical
-        className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
-        aria-hidden="true"
-        onPointerDown={(e) => controls.start(e)}
-      />
+      <div
+        className="flex-shrink-0 p-1.5 -m-1.5 cursor-grab active:cursor-grabbing touch-none"
+        onPointerDown={handleGripPointerDown}
+      >
+        <GripVertical
+          className={cn(
+            "w-4 h-4 transition-colors",
+            grabbing ? "text-primary" : "text-muted-foreground"
+          )}
+          aria-hidden="true"
+        />
+      </div>
 
       <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
         <img
@@ -414,12 +469,16 @@ function FlowDetailStep({
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         {step.side && step.side !== 'none' && (
-          <Badge
-            variant="outline"
-            className="text-[10px] uppercase px-1.5"
+          <span
+            className={cn(
+              "text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full border",
+              step.side === 'left'
+                ? "bg-blue-500/15 text-blue-500 border-blue-500/25"
+                : "bg-amber-500/15 text-amber-500 border-amber-500/25"
+            )}
           >
             {step.side === 'left' ? 'L' : 'R'}
-          </Badge>
+          </span>
         )}
         <span className="text-xs text-muted-foreground tabular-nums">
           {formatDuration(step.durationSec)}

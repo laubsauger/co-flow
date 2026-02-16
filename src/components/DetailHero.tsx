@@ -11,6 +11,8 @@ interface DetailHeroProps {
   bodyAreas: string[];
   backTo: string;
   backLabel: string;
+  /** Optional state passed to the back Link */
+  backState?: Record<string, unknown>;
   /** Rendered top-right of hero (e.g. favorite button) */
   actions?: ReactNode;
   /** Rendered bottom of hero overlay (title, tags, meta) */
@@ -26,6 +28,7 @@ export function DetailHero({
   bodyAreas,
   backTo,
   backLabel,
+  backState,
   actions,
   children,
   placeholderType,
@@ -52,7 +55,7 @@ export function DetailHero({
 
       {/* Back button — top left */}
       <div className="absolute top-4 left-4 z-10">
-        <Link to={backTo} aria-label={backLabel}>
+        <Link to={backTo} state={backState} aria-label={backLabel}>
           <Button
             className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm"
             variant="ghost"
