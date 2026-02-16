@@ -8,6 +8,8 @@ interface UserDataState {
   favoriteFlowIds: string[];
   reducedMotion: boolean;
   themeMode: ThemeMode;
+  hasCompletedSession: boolean;
+  installBannerDismissed: boolean;
 
   toggleFavoriteGesture: (id: string) => void;
   toggleFavoriteFlow: (id: string) => void;
@@ -15,6 +17,8 @@ interface UserDataState {
   isFlowFavorite: (id: string) => boolean;
   toggleReducedMotion: () => void;
   setThemeMode: (mode: ThemeMode) => void;
+  markSessionCompleted: () => void;
+  dismissInstallBanner: () => void;
 }
 
 export const useUserData = create<UserDataState>()(
@@ -24,6 +28,8 @@ export const useUserData = create<UserDataState>()(
       favoriteFlowIds: [],
       reducedMotion: false,
       themeMode: 'system' as ThemeMode,
+      hasCompletedSession: false,
+      installBannerDismissed: false,
 
       toggleFavoriteGesture: (id) => {
         const { favoriteGestureIds } = get();
@@ -45,6 +51,8 @@ export const useUserData = create<UserDataState>()(
       isFlowFavorite: (id) => get().favoriteFlowIds.includes(id),
       toggleReducedMotion: () => set((s) => ({ reducedMotion: !s.reducedMotion })),
       setThemeMode: (mode) => set({ themeMode: mode }),
+      markSessionCompleted: () => set({ hasCompletedSession: true }),
+      dismissInstallBanner: () => set({ installBannerDismissed: true }),
     }),
     {
       name: 'co-flow-user-data',

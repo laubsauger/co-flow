@@ -45,7 +45,7 @@ export const scaleIn = {
 export const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.05,
+      staggerChildren: 0.03,
     },
   },
 };

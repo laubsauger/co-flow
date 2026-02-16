@@ -6,8 +6,10 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet';
 import { useUserData, type ThemeMode } from '@/lib/stores/user-data';
+import { useInstallPrompt } from '@/lib/hooks/use-install-prompt';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Shield, Eye, Info, Sun, Moon, Monitor } from 'lucide-react';
+import { Shield, Eye, Info, Sun, Moon, Monitor, Download, Share } from 'lucide-react';
 
 interface SettingsDrawerProps {
   open: boolean;
@@ -23,6 +25,8 @@ const themeOptions: { mode: ThemeMode; icon: typeof Sun; label: string }[] = [
 export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
   const { reducedMotion, toggleReducedMotion, themeMode, setThemeMode } =
     useUserData();
+  const { canPrompt, triggerInstall, isIOS, isStandalone } = useInstallPrompt();
+  const showInstall = !isStandalone && (canPrompt || isIOS);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -89,6 +93,40 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
               </button>
             </label>
           </section>
+
+          {/* Install App */}
+          {showInstall && (
+            <section>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                Install App
+              </h3>
+              <div className="rounded-lg border p-3 space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {isIOS
+                    ? 'Add Co-Flow to your home screen for quick access and offline use.'
+                    : 'Install Co-Flow for quick access and offline use.'}
+                </p>
+                {isIOS ? (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    Tap <Share className="w-3.5 h-3.5 inline-block" /> then
+                    &quot;Add to Home Screen&quot;
+                  </p>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={async () => {
+                      await triggerInstall();
+                    }}
+                  >
+                    <Download className="w-3.5 h-3.5 mr-1.5" />
+                    Install Co-Flow
+                  </Button>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* Safety Disclaimers */}
           <section>

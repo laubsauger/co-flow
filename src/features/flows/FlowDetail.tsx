@@ -3,7 +3,7 @@ import { motion, Reorder, useDragControls } from 'framer-motion';
 import { allFlows, gestureMap } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight, Droplets, RectangleHorizontal } from 'lucide-react';
+import { Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight, Droplets, RectangleHorizontal, Share2 } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
 import { DetailHero } from '@/components/DetailHero';
 import { usePlayerStore } from '@/lib/stores/player';
@@ -17,6 +17,8 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
+import { shareOrCopy } from '@/lib/share';
+import { toast } from 'sonner';
 
 type ResolvedStep = {
   gestureId: string;
@@ -43,7 +45,7 @@ export function FlowDetail() {
   const currentIndex = allFlows.findIndex((f) => f.id === id);
   const prevFlow = currentIndex > 0 ? allFlows[currentIndex - 1] : undefined;
   const nextFlow = currentIndex < allFlows.length - 1 ? allFlows[currentIndex + 1] : undefined;
-  const { ref: swipeRef, hasPrev, hasNext } = useSwipeNavigation({
+  const { ref: swipeRef } = useSwipeNavigation({
     prevUrl: prevFlow ? `/flows/${prevFlow.id}` : undefined,
     nextUrl: nextFlow ? `/flows/${nextFlow.id}` : undefined,
   });
@@ -156,7 +158,7 @@ export function FlowDetail() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={springs.soft}
+      transition={springs.snappy}
       className="min-h-screen bg-background pb-40 relative"
     >
       {/* Hero */}
@@ -172,6 +174,25 @@ export function FlowDetail() {
             backTo="/"
             backLabel="Back to flows"
             placeholderType="flow"
+            actions={
+              <Button
+                variant="ghost"
+                className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm"
+                aria-label="Share flow"
+                onClick={async () => {
+                  const result = await shareOrCopy({
+                    title: flow.name,
+                    text: flow.description,
+                    url: window.location.href,
+                  });
+                  if (result === 'copied') {
+                    toast('Link copied to clipboard');
+                  }
+                }}
+              >
+                <Share2 className="w-5 h-5" />
+              </Button>
+            }
           >
             <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
               {flow.name}
@@ -199,6 +220,24 @@ export function FlowDetail() {
           </DetailHero>
         );
       })()}
+
+      {/* Prev / Next navigation */}
+      {(prevFlow || nextFlow) && (
+        <div className="flex justify-between items-center px-4 pt-3 max-w-2xl mx-auto">
+          {prevFlow ? (
+            <Link to={`/flows/${prevFlow.id}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors min-w-0">
+              <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs truncate max-w-[120px]">{prevFlow.name}</span>
+            </Link>
+          ) : <div />}
+          {nextFlow ? (
+            <Link to={`/flows/${nextFlow.id}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors min-w-0">
+              <span className="text-xs truncate max-w-[120px]">{nextFlow.name}</span>
+              <ChevronRight className="w-4 h-4 flex-shrink-0" />
+            </Link>
+          ) : <div />}
+        </div>
+      )}
 
       {/* Meta Content Row */}
       <div className="px-4 pt-4 max-w-2xl mx-auto space-y-4">
@@ -340,20 +379,6 @@ export function FlowDetail() {
           </div>
         )}
       </div>
-
-      {/* Swipe edge indicators */}
-      {hasPrev && prevFlow && (
-        <div className="fixed left-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
-          <ChevronLeft className="w-4 h-4" />
-          <span className="text-xs max-w-[60px] truncate hidden sm:inline">{prevFlow.name}</span>
-        </div>
-      )}
-      {hasNext && nextFlow && (
-        <div className="fixed right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
-          <span className="text-xs max-w-[60px] truncate hidden sm:inline">{nextFlow.name}</span>
-          <ChevronRight className="w-4 h-4" />
-        </div>
-      )}
 
       {contraindications.length > 0 && (
         <SafetyCheckDialog

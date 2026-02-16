@@ -140,7 +140,7 @@ export function FlowList() {
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ ...springs.soft, delay: i * 0.05 }}
+                                transition={{ ...springs.snappy, delay: i * 0.03 }}
                                 className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                             >
                                 {(() => {
@@ -244,7 +244,7 @@ export function FlowList() {
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ ...springs.soft, delay: i * 0.05 }}
+                                    transition={{ ...springs.snappy, delay: i * 0.03 }}
                                     className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                                 >
                                     {/* Generic Gradient Header */}

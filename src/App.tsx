@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 import { lazy, Suspense } from 'react';
 import { AppLayout, AppShell } from '@/app/layout';
+import { Toaster } from '@/components/ui/sonner';
 
 const GestureList = lazy(() => import('@/features/gestures/GestureList').then(m => ({ default: m.GestureList })));
 const GestureDetail = lazy(() => import('@/features/gestures/GestureDetail').then(m => ({ default: m.GestureDetail })));
@@ -56,6 +57,7 @@ function AnimatedRoutes() {
 
       {/* Persistent shell — stays mounted across page transitions */}
       <AppShell />
+      <Toaster position="bottom-center" />
     </Suspense>
   );
 }

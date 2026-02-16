@@ -96,7 +96,7 @@ export function BuilderHome() {
               key={flow.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ ...springs.soft, delay: i * 0.05 }}
+              transition={{ ...springs.snappy, delay: i * 0.03 }}
               className="rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow"
             >
               <button

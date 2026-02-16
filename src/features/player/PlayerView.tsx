@@ -15,6 +15,7 @@ import { CaptionOverlay } from './CaptionOverlay';
 import { useWakeLock } from './useWakeLock';
 import { useAudioChainer } from './hooks/use-audio-chainer';
 import { startSnapshotLoop } from '@/lib/stores/session-resume';
+import { useUserData } from '@/lib/stores/user-data';
 
 export function PlayerView() {
     const {
@@ -41,6 +42,13 @@ export function PlayerView() {
 
     // Audio chaining engine
     useAudioChainer();
+
+    // Track first completed session for install prompt
+    useEffect(() => {
+        if (status === 'completed') {
+            useUserData.getState().markSessionCompleted();
+        }
+    }, [status]);
 
     // Session persistence — save snapshot every 3s while playing
     useEffect(() => {

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
@@ -13,6 +13,8 @@ import { DetailHero } from '@/components/DetailHero';
 import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
 import { TranscriptSection } from './TranscriptSection';
 import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
+import { shareOrCopy } from '@/lib/share';
+import { toast } from 'sonner';
 
 export function GestureDetail() {
     useScrollTop();
@@ -28,7 +30,7 @@ export function GestureDetail() {
     const currentIndex = allGestures.findIndex(g => g.id === id);
     const prevGesture = currentIndex > 0 ? allGestures[currentIndex - 1] : undefined;
     const nextGesture = currentIndex < allGestures.length - 1 ? allGestures[currentIndex + 1] : undefined;
-    const { ref: swipeRef, hasPrev, hasNext } = useSwipeNavigation({
+    const { ref: swipeRef } = useSwipeNavigation({
         prevUrl: prevGesture ? `/gestures/${prevGesture.id}` : undefined,
         nextUrl: nextGesture ? `/gestures/${nextGesture.id}` : undefined,
     });
@@ -68,6 +70,25 @@ export function GestureDetail() {
                 backTo={returnTo ?? '/gestures'}
                 backLabel={returnTo ? 'Back to flow' : 'Back to library'}
                 backState={returnTo ? { restorePicker: true } : undefined}
+                actions={
+                    <Button
+                        variant="ghost"
+                        className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm"
+                        aria-label="Share gesture"
+                        onClick={async () => {
+                            const result = await shareOrCopy({
+                                title: gesture.name,
+                                text: gesture.summary,
+                                url: window.location.href,
+                            });
+                            if (result === 'copied') {
+                                toast('Link copied to clipboard');
+                            }
+                        }}
+                    >
+                        <Share2 className="w-5 h-5" />
+                    </Button>
+                }
             >
                 <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
                     {gesture.name}
@@ -86,6 +107,24 @@ export function GestureDetail() {
                     </span>
                 </div>
             </DetailHero>
+
+            {/* Prev / Next navigation */}
+            {(prevGesture || nextGesture) && (
+                <div className="flex justify-between items-center px-4 pt-3 max-w-2xl mx-auto">
+                    {prevGesture ? (
+                        <Link to={`/gestures/${prevGesture.id}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors min-w-0">
+                            <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+                            <span className="text-xs truncate max-w-[120px]">{prevGesture.name}</span>
+                        </Link>
+                    ) : <div />}
+                    {nextGesture ? (
+                        <Link to={`/gestures/${nextGesture.id}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors min-w-0">
+                            <span className="text-xs truncate max-w-[120px]">{nextGesture.name}</span>
+                            <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                        </Link>
+                    ) : <div />}
+                </div>
+            )}
 
             {/* Content */}
             <div className="p-6 max-w-2xl mx-auto space-y-8">
@@ -213,20 +252,6 @@ export function GestureDetail() {
                     />
                 )}
             </div>
-
-            {/* Swipe edge indicators */}
-            {hasPrev && prevGesture && (
-                <div className="fixed left-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
-                    <ChevronLeft className="w-4 h-4" />
-                    <span className="text-xs max-w-[60px] truncate hidden sm:inline">{prevGesture.name}</span>
-                </div>
-            )}
-            {hasNext && nextGesture && (
-                <div className="fixed right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
-                    <span className="text-xs max-w-[60px] truncate hidden sm:inline">{nextGesture.name}</span>
-                    <ChevronRight className="w-4 h-4" />
-                </div>
-            )}
 
             {hasContraindications && (
                 <SafetyCheckDialog

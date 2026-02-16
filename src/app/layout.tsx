@@ -3,6 +3,7 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { Hand, ListMusic, Wrench, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResumePrompt } from '@/features/player/ResumePrompt';
+import { InstallBanner } from '@/components/InstallBanner';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { startSnapshotLoop } from '@/lib/stores/session-resume';
 import { useTheme } from '@/lib/hooks/use-theme';
@@ -40,7 +41,18 @@ export function AppShell() {
 
   return (
     <>
+      <InstallBanner />
       <ResumePrompt />
+
+      {/* Settings cog — top right, subtle */}
+      <button
+        onClick={() => setSettingsOpen(true)}
+        aria-label="Settings"
+        className="fixed top-3 right-4 z-50 p-2 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 transition-colors"
+      >
+        <Settings className="w-4.5 h-4.5" aria-hidden="true" />
+      </button>
+
       <nav aria-label="Main navigation" className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t z-50 safe-area-bottom">
         <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-4">
           {navItems.map(({ to, icon: Icon, label }) => (
@@ -62,14 +74,6 @@ export function AppShell() {
               <span className="text-[11px] font-medium">{label}</span>
             </NavLink>
           ))}
-          <button
-            onClick={() => setSettingsOpen(true)}
-            aria-label="Settings"
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem] text-muted-foreground hover:text-foreground"
-          >
-            <Settings className="w-5 h-5" aria-hidden="true" />
-            <span className="text-[11px] font-medium">Settings</span>
-          </button>
         </div>
       </nav>
 
