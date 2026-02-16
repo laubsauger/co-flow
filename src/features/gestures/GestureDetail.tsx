@@ -1,9 +1,8 @@
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { allGestures } from '@/content/generated';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
+import { Timer, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
@@ -13,8 +12,7 @@ import { DetailHero } from '@/components/DetailHero';
 import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
 import { TranscriptSection } from './TranscriptSection';
 import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
-import { shareOrCopy } from '@/lib/share';
-import { toast } from 'sonner';
+import { DetailActions } from '@/components/DetailActions';
 
 export function GestureDetail() {
     useScrollTop();
@@ -127,47 +125,14 @@ export function GestureDetail() {
                 )}
 
                 {/* Play Action */}
-                <div className="flex gap-4">
-                    <Button
-                        className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg h-12 text-base"
-                        onClick={handlePlay}
-                    >
-                        <Play className="w-5 h-5 mr-2 fill-current" />
-                        Try Gesture
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        className="w-12 h-12 px-0"
-                        onClick={async () => {
-                            const result = await shareOrCopy({
-                                title: gesture.name,
-                                text: gesture.summary,
-                                url: window.location.href,
-                            });
-                            if (result === 'copied') {
-                                toast('Link copied to clipboard');
-                            }
-                        }}
-                        aria-label="Share gesture"
-                    >
-                        <Share2 className="w-5 h-5 text-muted-foreground" />
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        className="w-12 h-12 px-0"
-                        onClick={() => toggleFavoriteGesture(gesture.id)}
-                        aria-label={isGestureFavorite(gesture.id) ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                        <Heart
-                            className={cn(
-                                'w-6 h-6 transition-colors',
-                                isGestureFavorite(gesture.id)
-                                    ? 'text-red-500 fill-red-500'
-                                    : 'text-muted-foreground hover:text-red-500'
-                            )}
-                        />
-                    </Button>
-                </div>
+                <DetailActions
+                    playLabel="Try Gesture"
+                    onPlay={handlePlay}
+                    shareData={{ title: gesture.name, text: gesture.summary, url: window.location.href }}
+                    isFavorite={isGestureFavorite(gesture.id)}
+                    onToggleFavorite={() => toggleFavoriteGesture(gesture.id)}
+                    favoriteLabel={isGestureFavorite(gesture.id) ? 'Remove from favorites' : 'Add to favorites'}
+                />
 
                 {/* Description */}
                 <div className="space-y-4">

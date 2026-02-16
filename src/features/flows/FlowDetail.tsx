@@ -1,9 +1,8 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, Reorder, useDragControls } from 'framer-motion';
 import { allFlows, gestureMap } from '@/content/generated';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight, Droplets, RectangleHorizontal, Share2 } from 'lucide-react';
+import { Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight, Droplets, RectangleHorizontal } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
 import { DetailHero } from '@/components/DetailHero';
 import { usePlayerStore } from '@/lib/stores/player';
@@ -17,8 +16,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useScrollTop } from '@/lib/hooks/use-scroll-restore';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
-import { shareOrCopy } from '@/lib/share';
-import { toast } from 'sonner';
+import { DetailActions } from '@/components/DetailActions';
 
 type ResolvedStep = {
   gestureId: string;
@@ -174,25 +172,6 @@ export function FlowDetail() {
             backTo="/"
             backLabel="Back to flows"
             placeholderType="flow"
-            actions={
-              <Button
-                variant="ghost"
-                className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm"
-                aria-label="Share flow"
-                onClick={async () => {
-                  const result = await shareOrCopy({
-                    title: flow.name,
-                    text: flow.description,
-                    url: window.location.href,
-                  });
-                  if (result === 'copied') {
-                    toast('Link copied to clipboard');
-                  }
-                }}
-              >
-                <Share2 className="w-5 h-5" />
-              </Button>
-            }
           >
             <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
               {flow.name}
@@ -320,48 +299,15 @@ export function FlowDetail() {
         )}
 
         {/* Play + Share + Favorite */}
-        <div className="flex gap-4">
-          <Button
-            className="flex-1 h-12 text-base shadow-lg"
-            onClick={handlePlay}
-            disabled={flow.steps.length === 0 && !isCompiled}
-          >
-            <Play className="w-5 h-5 mr-2 fill-current" />
-            Start Flow
-          </Button>
-          <Button
-            variant="secondary"
-            className="w-12 h-12 px-0"
-            onClick={async () => {
-              const result = await shareOrCopy({
-                title: flow.name,
-                text: flow.description,
-                url: window.location.href,
-              });
-              if (result === 'copied') {
-                toast('Link copied to clipboard');
-              }
-            }}
-            aria-label="Share flow"
-          >
-            <Share2 className="w-5 h-5 text-muted-foreground" />
-          </Button>
-          <Button
-            variant="secondary"
-            className="w-12 h-12 px-0"
-            onClick={() => toggleFavoriteFlow(flow.id)}
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            <Heart
-              className={cn(
-                'w-6 h-6 transition-colors',
-                isFavorite
-                  ? 'text-red-500 fill-red-500'
-                  : 'text-muted-foreground hover:text-red-500'
-              )}
-            />
-          </Button>
-        </div>
+        <DetailActions
+          playLabel="Start Flow"
+          onPlay={handlePlay}
+          playDisabled={flow.steps.length === 0 && !isCompiled}
+          shareData={{ title: flow.name, text: flow.description, url: window.location.href }}
+          isFavorite={isFavorite}
+          onToggleFavorite={() => toggleFavoriteFlow(flow.id)}
+          favoriteLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+        />
 
 
 

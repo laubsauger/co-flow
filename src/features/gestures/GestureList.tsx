@@ -85,7 +85,7 @@ export function GestureList() {
     return (
         <div className="max-w-2xl mx-auto pb-20">
             <div className="px-4 pt-4 pb-2">
-                <BrandHeader title="Explore" />
+                <BrandHeader title="Gestures" />
             </div>
 
             {/* Sticky search + filters */}
