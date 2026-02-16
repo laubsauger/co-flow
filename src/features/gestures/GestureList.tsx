@@ -11,6 +11,7 @@ import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { Gesture } from '@/lib/types/gesture';
 import { BrandHeader } from '@/components/BrandHeader';
+import { useScrollRestore } from '@/lib/hooks/use-scroll-restore';
 
 type SortOption = 'default' | 'favorites' | 'alpha' | 'intensity';
 
@@ -22,6 +23,7 @@ const SORT_LABELS: Record<SortOption, string> = {
 };
 
 export function GestureList() {
+    useScrollRestore('/gestures');
     const [search, setSearch] = useState('');
     const [selectedBodyArea, setSelectedBodyArea] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<SortOption>('default');

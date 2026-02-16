@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { getFlowGradient } from '@/lib/body-area-colors';
 import { gestureMap } from '@/content/generated';
 import { BrandHeader } from '@/components/BrandHeader';
+import { useScrollRestore } from '@/lib/hooks/use-scroll-restore';
 
 export function BuilderHome() {
+  useScrollRestore('/builder');
   const navigate = useNavigate();
   const { flows, createFlow, deleteFlow } = useUserFlows();
   const [showCreate, setShowCreate] = useState(false);

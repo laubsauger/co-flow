@@ -12,7 +12,7 @@
     {
       "gestureId": "walking-the-legs",
       "durationSec": 120,
-      "side": "left"
+      "side": "none"
     },
     {
       "gestureId": "hip-circles",
@@ -32,7 +32,7 @@
     {
       "gestureId": "iguana-tail",
       "durationSec": 120,
-      "side": "none"
+      "side": "left"
     },
     {
       "gestureId": "dragon-tail",
@@ -55,9 +55,49 @@
       "side": "left"
     },
     {
+      "gestureId": "hip-circles",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "blood-stop",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "harmonic-rocking",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "iguana-tail",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "dragon-tail",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "compress-the-back",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "stack-the-hips",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "shoulder-circles-side",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
       "gestureId": "belly-to-feet",
       "durationSec": 120,
-      "side": "left"
+      "side": "none"
     },
     {
       "gestureId": "double-leg-hammock",
@@ -72,7 +112,7 @@
     {
       "gestureId": "diagonal-fascial-pull",
       "durationSec": 120,
-      "side": "none"
+      "side": "left"
     },
     {
       "gestureId": "angel-wings",
@@ -83,6 +123,21 @@
       "gestureId": "walk-the-lung-lines",
       "durationSec": 120,
       "side": "left"
+    },
+    {
+      "gestureId": "diagonal-fascial-pull",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "angel-wings",
+      "durationSec": 120,
+      "side": "right"
+    },
+    {
+      "gestureId": "walk-the-lung-lines",
+      "durationSec": 120,
+      "side": "right"
     },
     {
       "gestureId": "hand-on-the-chest",

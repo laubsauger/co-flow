@@ -16,6 +16,7 @@ import Fuse from 'fuse.js';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture } from '@/lib/types/gesture';
 import { BrandHeader } from '@/components/BrandHeader';
+import { useScrollRestore } from '@/lib/hooks/use-scroll-restore';
 
 const fuseInstance = new Fuse(allFlows, {
     keys: [
@@ -29,6 +30,7 @@ const fuseInstance = new Fuse(allFlows, {
 type Tab = 'curated' | 'mine';
 
 export function FlowList() {
+    useScrollRestore('/');
     const navigate = useNavigate();
     const { loadFlow, play } = usePlayerStore();
     const { isFlowFavorite } = useUserData();
