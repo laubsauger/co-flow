@@ -145,7 +145,7 @@ export function FlowList() {
                                     const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
                                     return (
                                         <div
-                                            className="h-28 relative overflow-hidden"
+                                            className="aspect-[2/1] relative overflow-hidden"
                                             style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
                                         >
                                             {poster ? (
@@ -244,7 +244,7 @@ export function FlowList() {
 
                                         return (
                                             <div
-                                                className="h-24 relative overflow-hidden"
+                                                className="aspect-[5/2] relative overflow-hidden"
                                                 style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
                                             >
                                                 {poster ? (

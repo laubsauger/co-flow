@@ -119,20 +119,24 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
           >
             All
           </button>
-          {bodyAreas.map(area => (
-            <button
-              key={area}
-              onClick={() => setSelectedBodyArea(area)}
-              aria-pressed={selectedBodyArea === area}
-              className={cn(
-                "px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize",
-                selectedBodyArea !== area && "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              )}
-              style={selectedBodyArea === area ? { backgroundColor: getBodyAreaColor([area]), color: 'white' } : undefined}
-            >
-              {area}
-            </button>
-          ))}
+          {bodyAreas.map(area => {
+            const color = getBodyAreaColor([area]);
+            const isActive = selectedBodyArea === area;
+            return (
+              <button
+                key={area}
+                onClick={() => setSelectedBodyArea(area)}
+                aria-pressed={isActive}
+                className="px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize"
+                style={isActive
+                  ? { backgroundColor: color, color: 'white' }
+                  : { border: `1.5px solid ${color}`, color }
+                }
+              >
+                {area}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1.5">

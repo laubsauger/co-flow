@@ -111,9 +111,11 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
 
         {/* Countdown */}
         <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute w-48 h-48 rounded-full bg-black/30 blur-3xl" />
           <div className={cn(
-            'font-bold text-white tabular-nums tracking-tighter drop-shadow-lg leading-none',
-            glanceMode ? 'text-[7.5rem]' : 'text-[5rem]'
+            'relative font-bold text-white tabular-nums tracking-tighter leading-none',
+            glanceMode ? 'text-[7.5rem]' : 'text-[5rem]',
+            '[text-shadow:_0_2px_12px_rgba(0,0,0,0.6),_0_0_40px_rgba(0,0,0,0.3)]'
           )}>
             {formatTime(remainingTime)}
           </div>

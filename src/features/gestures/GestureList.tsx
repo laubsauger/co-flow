@@ -153,20 +153,24 @@ export function GestureList() {
                     >
                         All
                     </button>
-                    {bodyAreas.map(area => (
-                        <button
-                            key={area}
-                            onClick={() => setSelectedBodyArea(area)}
-                            aria-pressed={selectedBodyArea === area}
-                            className={cn(
-                                "px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap capitalize",
-                                selectedBodyArea !== area && "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            )}
-                            style={selectedBodyArea === area ? { backgroundColor: getBodyAreaColor([area]), color: 'white' } : undefined}
-                        >
-                            {area}
-                        </button>
-                    ))}
+                    {bodyAreas.map(area => {
+                        const color = getBodyAreaColor([area]);
+                        const isActive = selectedBodyArea === area;
+                        return (
+                            <button
+                                key={area}
+                                onClick={() => setSelectedBodyArea(area)}
+                                aria-pressed={isActive}
+                                className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap capitalize"
+                                style={isActive
+                                    ? { backgroundColor: color, color: 'white' }
+                                    : { border: `1.5px solid ${color}`, color }
+                                }
+                            >
+                                {area}
+                            </button>
+                        );
+                    })}
                 </div>
             </header>
 
@@ -178,7 +182,7 @@ export function GestureList() {
                             className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                         >
                             <div
-                                className="h-32 relative overflow-hidden"
+                                className="aspect-[3/2] relative overflow-hidden"
                                 style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
                             >
                                 {gesture.media.poster ? (
