@@ -280,11 +280,20 @@ export function FlowList() {
                                             </p>
                                         )}
 
-                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                            <span className="flex items-center gap-1">
-                                                <Layers className="w-3.5 h-3.5" />
-                                                {flow.steps.length} steps
-                                            </span>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                                <span className="flex items-center gap-1">
+                                                    <Layers className="w-3.5 h-3.5" />
+                                                    {flow.steps.length} steps
+                                                </span>
+                                            </div>
+                                            {flow.tags.length > 0 && (
+                                                <div className="flex gap-1">
+                                                    {flow.tags.slice(0, 3).map(tag => (
+                                                        <ColoredTag key={tag} tag={tag} />
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </motion.div>

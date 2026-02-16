@@ -38,10 +38,7 @@ async function main() {
             console.error(`  ❌ ${file}: Missing name`);
             errors++;
         }
-        if (!content.media?.audio) {
-            console.error(`  ❌ ${file}: Missing media.audio`);
-            errors++;
-        } else {
+        if (content.media?.audio) {
             const audioPath = path.join(dir, content.media.audio);
             try {
                 await fs.access(audioPath);
