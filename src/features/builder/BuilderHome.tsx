@@ -32,12 +32,12 @@ export function BuilderHome() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto pb-20">
-      <header className="mb-6 space-y-1">
-        <BrandHeader />
-        <h1 className="text-3xl font-bold tracking-tight text-primary">
-          Builder
-        </h1>
-        <p className="text-muted-foreground">Design your own healing sequences.</p>
+      <header className="mb-4">
+        <div className="flex items-baseline gap-2">
+          <BrandHeader />
+          <span className="text-muted-foreground/40 text-sm">/</span>
+          <h1 className="text-lg font-semibold tracking-tight">Builder</h1>
+        </div>
       </header>
 
       {/* Create new flow */}
@@ -107,7 +107,7 @@ export function BuilderHome() {
               >
                 {/* Gradient Thumbnail */}
                 <div
-                  className="w-12 h-12 rounded-full flex-shrink-0 shadow-inner"
+                  className="w-12 h-12 rounded-full flex-shrink-0 shadow-inner border border-white/10"
                   style={{
                     background: getFlowGradient(
                       flow.steps.flatMap(s => gestureMap.get(s.gestureId)?.bodyAreas || [])

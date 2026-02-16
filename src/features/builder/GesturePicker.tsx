@@ -105,13 +105,13 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
         <div
           role="group"
           aria-label="Filter by body area"
-          className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide"
+          className="flex gap-1.5 overflow-x-auto px-4 scrollbar-hide"
         >
           <button
             onClick={() => setSelectedBodyArea(null)}
             aria-pressed={selectedBodyArea === null}
             className={cn(
-              "px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap",
+              "px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap",
               selectedBodyArea === null
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -127,10 +127,10 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
                 key={area}
                 onClick={() => setSelectedBodyArea(area)}
                 aria-pressed={isActive}
-                className="px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize"
+                className="px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap capitalize"
                 style={isActive
                   ? { backgroundColor: color, color: 'white' }
-                  : { border: `1.5px solid ${color}`, color }
+                  : { backgroundColor: `color-mix(in oklch, ${color} 12%, transparent)`, color }
                 }
               >
                 {area}

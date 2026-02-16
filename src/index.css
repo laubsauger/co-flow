@@ -144,6 +144,15 @@
   }
 }
 
+/* Hide scrollbars while keeping scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Ensure player countdown is always readable over any background */
 .glance-mode [class*="tabular-nums"] {
   text-shadow: 0 2px 8px rgba(0,0,0,0.5);

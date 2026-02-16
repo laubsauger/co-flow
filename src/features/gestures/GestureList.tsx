@@ -81,14 +81,17 @@ export function GestureList() {
 
     // ... (lines 82)
     return (
-        <div className="p-4 max-w-2xl mx-auto pb-20">
-            <header className="mb-6 space-y-4">
-                <div>
+        <div className="max-w-2xl mx-auto pb-20">
+            <div className="px-4 pt-4 pb-2">
+                <div className="flex items-baseline gap-2">
                     <BrandHeader />
-                    <h1 className="text-3xl font-bold tracking-tight text-primary">Explore</h1>
-                    <p className="text-sm text-muted-foreground mt-1">Find the perfect gesture for every moment.</p>
+                    <span className="text-muted-foreground/40 text-sm">/</span>
+                    <h1 className="text-lg font-semibold tracking-tight">Explore</h1>
                 </div>
+            </div>
 
+            {/* Sticky search + filters */}
+            <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-lg px-4 py-2 space-y-2">
                 <div className="flex gap-2">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -143,12 +146,12 @@ export function GestureList() {
                 )}
 
                 {/* Body area filters */}
-                <div role="group" aria-label="Filter by body area" className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                <div role="group" aria-label="Filter by body area" className="flex gap-1.5 overflow-x-auto scrollbar-hide">
                     <button
                         onClick={() => setSelectedBodyArea(null)}
                         aria-pressed={selectedBodyArea === null}
                         className={cn(
-                            "px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap",
+                            "px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap",
                             selectedBodyArea === null
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -164,10 +167,10 @@ export function GestureList() {
                                 key={area}
                                 onClick={() => setSelectedBodyArea(isActive ? null : area)}
                                 aria-pressed={isActive}
-                                className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap capitalize"
+                                className="px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap capitalize"
                                 style={isActive
                                     ? { backgroundColor: color, color: 'white' }
-                                    : { border: `1.5px solid ${color}`, color }
+                                    : { backgroundColor: `color-mix(in oklch, ${color} 12%, transparent)`, color }
                                 }
                             >
                                 {area}
@@ -175,9 +178,9 @@ export function GestureList() {
                         );
                     })}
                 </div>
-            </header>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 pt-2">
                 {filteredGestures.map(gesture => (
                     <Link key={gesture.id} to={`/gestures/${gesture.id}`}>
                         <motion.div

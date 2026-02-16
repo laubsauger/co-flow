@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { allFlows, allGestures, gestureMap } from '@/content/generated';
-import { Play, Heart, Clock, Layers, Search, Pencil } from 'lucide-react';
+import { Play, Heart, Layers, Search, Pencil } from 'lucide-react';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { useUserFlows } from '@/lib/stores/user-flows';
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { ColoredTag } from '@/components/ColoredTag';
 import { useState, useMemo } from 'react';
-import { getBodyAreaColor } from '@/lib/body-area-colors';
+import { getBodyAreaColor, getFlowGradient } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture } from '@/lib/types/gesture';
@@ -84,11 +84,11 @@ export function FlowList() {
 
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
-            <header className="mb-6 space-y-3">
-                <div>
+            <header className="mb-4 space-y-3">
+                <div className="flex items-baseline gap-2">
                     <BrandHeader />
-                    <h1 className="text-3xl font-bold tracking-tight text-primary">Flows</h1>
-                    <p className="text-sm text-muted-foreground mt-1">Guided sequences crafted with care.</p>
+                    <span className="text-muted-foreground/40 text-sm">/</span>
+                    <h1 className="text-lg font-semibold tracking-tight">Flows</h1>
                 </div>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -233,42 +233,25 @@ export function FlowList() {
                                     transition={{ ...springs.soft, delay: i * 0.05 }}
                                     className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                                 >
-                                    {(() => {
-                                        // Try to find the first gesture to get a poster or color tint
-                                        const firstGesture = flow.steps[0]
-                                            ? allGestures.find(g => g.id === flow.steps[0].gestureId)
-                                            : undefined;
+                                    {/* Generic Gradient Header */}
+                                    <div
+                                        className="h-24 relative overflow-hidden"
+                                        style={{
+                                            background: getFlowGradient(
+                                                flow.steps.flatMap(s => gestureMap.get(s.gestureId)?.bodyAreas || [])
+                                            )
+                                        }}
+                                    >
+                                        <div className="absolute inset-0 bg-black/10" />
 
-                                        // For user flows, we mostly rely on the first gesture's poster or a generic fallback
-                                        // unless we add custom poster upload later.
-                                        const poster = flow.poster || firstGesture?.media.poster;
-                                        const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
-
-                                        return (
-                                            <div
-                                                className="aspect-[5/2] relative overflow-hidden"
-                                                style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
-                                            >
-                                                {poster ? (
-                                                    <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <PlaceholderImage type="flow" />
-                                                )}
-                                                {tintColor && (
-                                                    <div
-                                                        className="absolute inset-0 mix-blend-color opacity-50 pointer-events-none"
-                                                        style={{ backgroundColor: tintColor }}
-                                                    />
-                                                )}
-                                                {/* Edit/Play Overlay */}
-                                                <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                                                    <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                                                        {formatDuration(flow.steps)}
-                                                    </div>
-                                                </div>
+                                        {/* Edit/Play Overlay */}
+                                        <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                            <div className="bg-black/40 text-white text-xs px-2 py-1 rounded-full backdrop-blur-md border border-white/10">
+                                                {formatDuration(flow.steps)}
                                             </div>
-                                        );
-                                    })()}
+                                        </div>
+                                    </div>
+
                                     <div className="p-4">
                                         <div className="flex items-start justify-between mb-1">
                                             <h3 className="font-semibold leading-tight">
@@ -302,10 +285,6 @@ export function FlowList() {
                                         )}
 
                                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                            <span className="flex items-center gap-1">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                {formatDuration(flow.steps)}
-                                            </span>
                                             <span className="flex items-center gap-1">
                                                 <Layers className="w-3.5 h-3.5" />
                                                 {flow.steps.length} steps
