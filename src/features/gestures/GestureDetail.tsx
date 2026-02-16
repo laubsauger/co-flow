@@ -70,25 +70,6 @@ export function GestureDetail() {
                 backTo={returnTo ?? '/gestures'}
                 backLabel={returnTo ? 'Back to flow' : 'Back to library'}
                 backState={returnTo ? { restorePicker: true } : undefined}
-                actions={
-                    <Button
-                        variant="ghost"
-                        className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm"
-                        aria-label="Share gesture"
-                        onClick={async () => {
-                            const result = await shareOrCopy({
-                                title: gesture.name,
-                                text: gesture.summary,
-                                url: window.location.href,
-                            });
-                            if (result === 'copied') {
-                                toast('Link copied to clipboard');
-                            }
-                        }}
-                    >
-                        <Share2 className="w-5 h-5" />
-                    </Button>
-                }
             >
                 <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm mb-2">
                     {gesture.name}
@@ -153,6 +134,23 @@ export function GestureDetail() {
                     >
                         <Play className="w-5 h-5 mr-2 fill-current" />
                         Try Gesture
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        className="w-12 h-12 px-0"
+                        onClick={async () => {
+                            const result = await shareOrCopy({
+                                title: gesture.name,
+                                text: gesture.summary,
+                                url: window.location.href,
+                            });
+                            if (result === 'copied') {
+                                toast('Link copied to clipboard');
+                            }
+                        }}
+                        aria-label="Share gesture"
+                    >
+                        <Share2 className="w-5 h-5 text-muted-foreground" />
                     </Button>
                     <Button
                         variant="secondary"

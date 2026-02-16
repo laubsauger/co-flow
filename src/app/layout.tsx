@@ -36,6 +36,7 @@ export function AppShell() {
   }, []);
 
   const hideNav = location.pathname.startsWith('/play');
+  const isBuilderEdit = /^\/builder\/.+/.test(location.pathname);
 
   if (hideNav) return null;
 
@@ -44,14 +45,14 @@ export function AppShell() {
       <InstallBanner />
       <ResumePrompt />
 
-      {/* Settings cog — top right, subtle */}
-      <button
+      {/* Settings cog — top right, subtle; hidden in flow editor to avoid overlap */}
+      {!isBuilderEdit && <button
         onClick={() => setSettingsOpen(true)}
         aria-label="Settings"
         className="fixed top-3 right-4 z-50 p-2 rounded-full text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 transition-colors"
       >
         <Settings className="w-4.5 h-4.5" aria-hidden="true" />
-      </button>
+      </button>}
 
       <nav aria-label="Main navigation" className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t z-50 safe-area-bottom">
         <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-4">
