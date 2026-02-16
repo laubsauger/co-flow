@@ -3,15 +3,15 @@
  * Used as tint overlays on gesture/flow card images.
  */
 export const BODY_AREA_COLORS: Record<string, string> = {
-  head: 'oklch(0.55 0.12 250)',      // blue
-  neck: 'oklch(0.55 0.12 220)',      // teal-blue
-  shoulders: 'oklch(0.55 0.12 190)', // teal
-  back: 'oklch(0.55 0.12 155)',      // sage green
-  chest: 'oklch(0.55 0.10 350)',     // warm rose
-  arms: 'oklch(0.55 0.12 70)',       // amber
-  hands: 'oklch(0.55 0.12 55)',      // gold
-  legs: 'oklch(0.55 0.12 120)',      // yellow-green
-  feet: 'oklch(0.55 0.12 30)',       // coral
+  head: 'oklch(0.65 0.10 250)',      // soft blue
+  neck: 'oklch(0.65 0.10 220)',      // soft teal-blue
+  shoulders: 'oklch(0.65 0.10 190)', // soft teal
+  back: 'oklch(0.65 0.10 155)',      // soft sage green
+  chest: 'oklch(0.65 0.10 350)',     // soft warm rose
+  arms: 'oklch(0.65 0.10 70)',       // soft amber
+  hands: 'oklch(0.65 0.10 55)',      // soft gold
+  legs: 'oklch(0.65 0.10 120)',      // soft yellow-green
+  feet: 'oklch(0.65 0.10 30)',       // soft coral
 };
 
 export const FALLBACK_COLOR = 'oklch(0.55 0.08 160)'; // sage
