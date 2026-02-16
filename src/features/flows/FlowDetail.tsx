@@ -196,31 +196,59 @@ export function FlowDetail() {
         );
       })()}
 
-      {/* Tags + Body areas + Favorite */}
-      <div className="px-4 pt-4 max-w-2xl mx-auto">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            {flow.tags.length > 0 && (
-              <div className="flex gap-1.5 flex-wrap">
-                {flow.tags.map((tag) => (
-                  <ColoredTag key={tag} tag={tag} size="md" />
+      {/* Meta Content Row */}
+      <div className="px-4 pt-4 max-w-2xl mx-auto space-y-4">
+        {/* Tags */}
+        {flow.tags.length > 0 && (
+          <div className="flex gap-1.5 flex-wrap">
+            {flow.tags.map((tag) => (
+              <ColoredTag key={tag} tag={tag} size="md" />
+            ))}
+          </div>
+        )}
+
+        {/* Body Areas & Equipment Row */}
+        <div className="flex items-center gap-4 text-sm flex-wrap">
+          {/* Body Areas - Circles */}
+          {bodyAreas.length > 0 && (
+            <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
+              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Focus</span>
+              <div className="flex -space-x-1.5 hover:space-x-0.5 transition-all">
+                {bodyAreas.map((area) => (
+                  <div
+                    key={area}
+                    className="w-5 h-5 rounded-full ring-2 ring-background relative group"
+                    style={{ backgroundColor: getBodyAreaColor([area]) }}
+                    title={area}
+                  >
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-popover text-popover-foreground text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-sm z-50 capitalize">
+                      {area}
+                    </span>
+                  </div>
                 ))}
               </div>
-            )}
-            {bodyAreas.length > 0 && (
-              <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-                {bodyAreas.map((area) => (
+            </div>
+          )}
+
+          {/* Equipment */}
+          {equipment.length > 0 && (
+            <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
+              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Gear</span>
+              <div className="flex gap-1.5">
+                {equipment.map((e) => (
                   <span
-                    key={area}
-                    className="capitalize text-[11px] font-medium px-2 py-0.5 rounded-full text-white whitespace-nowrap"
-                    style={{ backgroundColor: getBodyAreaColor([area]) }}
+                    key={e.name}
+                    className={cn(
+                      "text-xs capitalize",
+                      e.optional ? "text-muted-foreground" : "font-medium text-foreground"
+                    )}
                   >
-                    {area}
+                    {e.name}{e.optional ? '*' : ''}
                   </span>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -269,25 +297,7 @@ export function FlowDetail() {
           </Button>
         </div>
 
-        {/* Equipment */}
-        {equipment.length > 0 && (
-          <div>
-            <h3 className="font-medium text-sm text-muted-foreground mb-2">
-              Equipment
-            </h3>
-            <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-              {equipment.map((e) => (
-                <Badge
-                  key={e.name}
-                  variant={e.optional ? 'outline' : 'secondary'}
-                  className="capitalize whitespace-nowrap"
-                >
-                  {e.name}{e.optional ? ' (optional)' : ''}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
+
 
         {/* Step sequence — reorderable */}
         {localSteps.length > 0 && (

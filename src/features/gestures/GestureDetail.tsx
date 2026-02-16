@@ -142,48 +142,53 @@ export function GestureDetail() {
                     </div>
                 </div>
 
-                {/* Technical Details */}
-                <div className="text-sm">
-                    <h3 className="font-medium text-muted-foreground mb-2">Body Areas</h3>
-                    <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-                        {gesture.bodyAreas.map(area => (
-                            <span
-                                key={area}
-                                className="capitalize text-xs font-medium px-2.5 py-1 rounded-full text-white whitespace-nowrap"
-                                style={{ backgroundColor: getBodyAreaColor([area]) }}
-                            >
-                                {area}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Equipment */}
-                {gesture.equipment && gesture.equipment.length > 0 && (
-                    <div className="text-sm">
-                        <h3 className="font-medium text-muted-foreground mb-2">Equipment</h3>
-                        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-                            {gesture.equipment.map(e => (
-                                <span
-                                    key={e.name}
-                                    className={cn(
-                                        "capitalize text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 whitespace-nowrap",
-                                        e.optional
-                                            ? "bg-secondary text-secondary-foreground"
-                                            : "bg-foreground/10 text-foreground"
-                                    )}
+                {/* Meta Info Row */}
+                <div className="flex items-center gap-4 text-sm flex-wrap -mt-2">
+                    {/* Body Areas - Circles */}
+                    <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
+                        <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Focus</span>
+                        <div className="flex -space-x-1.5 hover:space-x-0.5 transition-all">
+                            {gesture.bodyAreas.map((area) => (
+                                <div
+                                    key={area}
+                                    className="w-5 h-5 rounded-full ring-2 ring-background relative group"
+                                    style={{ backgroundColor: getBodyAreaColor([area]) }}
+                                    title={area}
                                 >
-                                    {e.name === 'massage oil' ? (
-                                        <Droplets className="w-3 h-3" />
-                                    ) : e.name === 'mat' ? (
-                                        <RectangleHorizontal className="w-3 h-3" />
-                                    ) : null}
-                                    {e.name}{e.optional ? ' (optional)' : ''}
-                                </span>
+                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-popover text-popover-foreground text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-sm z-50 capitalize">
+                                        {area}
+                                    </span>
+                                </div>
                             ))}
                         </div>
                     </div>
-                )}
+
+                    {/* Equipment */}
+                    {gesture.equipment && gesture.equipment.length > 0 && (
+                        <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
+                            <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Gear</span>
+                            <div className="flex gap-1.5 items-center">
+                                {gesture.equipment.map((e) => (
+                                    <div key={e.name} className="flex items-center gap-1">
+                                        {e.name === 'massage oil' ? (
+                                            <Droplets className="w-3 h-3 text-muted-foreground" />
+                                        ) : e.name === 'mat' ? (
+                                            <RectangleHorizontal className="w-3 h-3 text-muted-foreground" />
+                                        ) : null}
+                                        <span
+                                            className={cn(
+                                                "text-xs capitalize",
+                                                e.optional ? "text-muted-foreground" : "font-medium text-foreground"
+                                            )}
+                                        >
+                                            {e.name}{e.optional ? '*' : ''}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Transcript */}
                 {gesture.media.transcript && (

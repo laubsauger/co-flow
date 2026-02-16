@@ -16,17 +16,17 @@
     },
     {
       "gestureId": "hip-circles",
-      "durationSec": 120,
+      "durationSec": 60,
       "side": "left"
     },
     {
       "gestureId": "blood-stop",
-      "durationSec": 120,
+      "durationSec": 60,
       "side": "left"
     },
     {
       "gestureId": "harmonic-rocking",
-      "durationSec": 120,
+      "durationSec": 60,
       "side": "left"
     },
     {
@@ -56,17 +56,17 @@
     },
     {
       "gestureId": "hip-circles",
-      "durationSec": 120,
+      "durationSec": 60,
       "side": "right"
     },
     {
       "gestureId": "blood-stop",
-      "durationSec": 120,
+      "durationSec": 60,
       "side": "right"
     },
     {
       "gestureId": "harmonic-rocking",
-      "durationSec": 120,
+      "durationSec": 60,
       "side": "right"
     },
     {
