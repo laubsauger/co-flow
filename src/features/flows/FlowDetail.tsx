@@ -12,7 +12,7 @@ import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture } from '@/lib/types/gesture';
 
@@ -26,6 +26,8 @@ type ResolvedStep = {
 };
 
 type ReorderStep = ResolvedStep & { _key: string };
+
+let flowDetailKeySeq = 0;
 
 export function FlowDetail() {
   const { id } = useParams<{ id: string }>();
@@ -68,9 +70,8 @@ export function FlowDetail() {
     }, [flow]);
 
   // Local reorderable state with stable keys
-  const keyRef = useRef(0);
   const [localSteps, setLocalSteps] = useState<ReorderStep[]>(() =>
-    resolvedSteps.map((s) => ({ ...s, _key: `fs${++keyRef.current}` }))
+    resolvedSteps.map((s) => ({ ...s, _key: `fs${++flowDetailKeySeq}` }))
   );
 
   if (!flow) {
