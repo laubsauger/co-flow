@@ -9,7 +9,7 @@
     "neck"
   ],
   "summary": "Gentle strokes down the neck.",
-  "description": "A standard Neck Glides technique. Good for relaxation and tension relief.",
+  "description": "Slow, flowing strokes from the base of the skull down to the shoulder line. Use flat fingers or palms with light-to-medium pressure, following the muscle fibers of the upper trapezius and levator scapulae. Helps release stiffness from prolonged sitting or screen use.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 2,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }

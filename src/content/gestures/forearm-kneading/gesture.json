@@ -9,7 +9,7 @@
     "arms"
   ],
   "summary": "Knead the forearm muscles.",
-  "description": "A standard Forearm Kneading technique. Good for relaxation and tension relief.",
+  "description": "Alternating thumb-over-thumb kneading along the forearm extensors and flexors. Work from the wrist toward the elbow, applying moderate pressure to loosen tight fascial tissue. Especially beneficial for people who type, draw, or do repetitive hand work.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 3,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }

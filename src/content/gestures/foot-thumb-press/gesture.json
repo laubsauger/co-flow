@@ -9,7 +9,7 @@
     "feet"
   ],
   "summary": "Press thumbs into the sole.",
-  "description": "A standard Foot Thumb Press technique. Good for relaxation and tension relief.",
+  "description": "Firm thumb pressure into the sole of the foot, working from the heel along the arch to the ball. Stimulates reflex zones and releases tension in the plantar fascia. Deeply relaxing and grounding, especially after time on your feet.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 4,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }

@@ -9,7 +9,7 @@
     "hands"
   ],
   "summary": "Rub the palm and fingers.",
-  "description": "A standard Hand Massage technique. Good for relaxation and tension relief.",
+  "description": "Thumb pressure across the palm, working the thenar and hypothenar muscles, followed by gentle finger pulls and joint mobilization. Increases circulation, relieves cramping, and restores flexibility to hands fatigued by gripping, typing, or fine motor tasks.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 2,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }

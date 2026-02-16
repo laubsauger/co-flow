@@ -9,7 +9,7 @@
     "back"
   ],
   "summary": "Gentle stretch for lumbar area.",
-  "description": "A standard Lower Back Stretch technique. Good for relaxation and tension relief.",
+  "description": "Gentle palm pressure and slow gliding strokes along the erector spinae muscles on either side of the lumbar spine. Combined with a light rocking motion to encourage the lower back to release. Helps relieve stiffness from sitting, standing, or physical activity.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 2,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }

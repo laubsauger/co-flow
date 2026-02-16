@@ -23,6 +23,8 @@
   "intensity": 3,
   "contraindications": [],
   "equipment": [
-    "mat"
+    {
+      "name": "mat"
+    }
   ]
 }

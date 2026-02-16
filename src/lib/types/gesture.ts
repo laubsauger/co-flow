@@ -1,3 +1,8 @@
+export type EquipmentItem = {
+    name: string;
+    optional?: boolean; // true = nice-to-have, false/undefined = required
+};
+
 // Basic Gesture Interface
 export type Gesture = {
     id: string; // unique slug
@@ -16,7 +21,7 @@ export type Gesture = {
     };
     intensity: number; // 1-5
     contraindications?: string[];
-    equipment?: string[];
+    equipment?: EquipmentItem[];
     contentHash?: string; // for change detection
     poster?: string; // top level poster override
 };

@@ -9,7 +9,7 @@
     "legs"
   ],
   "summary": "Squeeze the calf muscles rhythmically.",
-  "description": "A standard Calf Squeeze technique. Good for relaxation and tension relief.",
+  "description": "Wrap both hands around the calf and apply rhythmic squeezing pressure from ankle to knee. Targets the gastrocnemius and soleus muscles to improve circulation, reduce cramping, and ease soreness from walking, running, or standing.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 4,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }

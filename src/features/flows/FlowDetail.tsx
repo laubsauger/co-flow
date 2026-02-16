@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
 import { useState, useMemo } from 'react';
 import type { PlayerStep } from '@/lib/types/player';
-import type { Gesture } from '@/lib/types/gesture';
+import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
 
 type ResolvedStep = {
   gestureId: string;
@@ -44,27 +44,44 @@ export function FlowDetail() {
         return {
           totalDuration: 0,
           contraindications: [] as string[],
-          equipment: [] as string[],
+          equipment: [] as EquipmentItem[],
           resolvedSteps: [] as ResolvedStep[],
         };
 
       let total = 0;
       const contras = new Set<string>();
-      const equip = new Set<string>();
+      // Track equipment: if any gesture marks it as required, it's required
+      const equipMap = new Map<string, boolean>(); // name → optional
       const steps: ResolvedStep[] = flow.steps.map((step) => {
         const gesture = gestureMap.get(step.gestureId);
         total += step.durationSec;
         if (gesture) {
           gesture.contraindications?.forEach((c) => contras.add(c));
-          gesture.equipment?.forEach((e) => equip.add(e));
+          gesture.equipment?.forEach((e) => {
+            const existing = equipMap.get(e.name);
+            // If any gesture requires it (optional !== true), mark as required
+            if (existing === undefined) {
+              equipMap.set(e.name, e.optional ?? false);
+            } else if (!e.optional) {
+              equipMap.set(e.name, false);
+            }
+          });
         }
         return { ...step, gesture: gesture as Gesture | undefined };
       });
 
+      const equipList: EquipmentItem[] = Array.from(equipMap.entries())
+        .sort((a, b) => {
+          // Required items first
+          if (a[1] !== b[1]) return a[1] ? 1 : -1;
+          return a[0].localeCompare(b[0]);
+        })
+        .map(([name, optional]) => ({ name, optional }));
+
       return {
         totalDuration: total,
         contraindications: Array.from(contras),
-        equipment: Array.from(equip),
+        equipment: equipList,
         resolvedSteps: steps,
       };
     }, [flow]);
@@ -244,12 +261,16 @@ export function FlowDetail() {
         {equipment.length > 0 && (
           <div>
             <h3 className="font-medium text-sm text-muted-foreground mb-2">
-              Equipment needed
+              Equipment
             </h3>
             <div className="flex gap-1.5 flex-wrap">
               {equipment.map((e) => (
-                <Badge key={e} variant="secondary" className="capitalize">
-                  {e}
+                <Badge
+                  key={e.name}
+                  variant={e.optional ? 'outline' : 'secondary'}
+                  className="capitalize"
+                >
+                  {e.name}{e.optional ? ' (optional)' : ''}
                 </Badge>
               ))}
             </div>
@@ -335,8 +356,10 @@ function FlowDetailStep({
           className="absolute inset-0 mix-blend-color opacity-30"
           style={{ backgroundColor: step.gesture ? getBodyAreaColor(step.gesture.bodyAreas) : 'var(--secondary)' }}
         />
-        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md bg-black/10">
-          {index + 1}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="w-5 h-5 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold text-white">
+            {index + 1}
+          </span>
         </div>
       </div>
       <div className="flex-1 min-w-0">

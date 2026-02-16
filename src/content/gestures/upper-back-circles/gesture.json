@@ -9,7 +9,7 @@
     "back"
   ],
   "summary": "Circular motions around shoulder blades.",
-  "description": "A standard Upper Back Circles technique. Good for relaxation and tension relief.",
+  "description": "Broad circular motions around and between the shoulder blades using the heel of the palm or fingertips. Targets the rhomboids and mid-trapezius, loosening the muscles that pull the shoulders forward. Great for counteracting rounded posture.",
   "durationDefaults": {
     "minSec": 30,
     "defaultSec": 60,
@@ -22,5 +22,5 @@
   },
   "intensity": 3,
   "contraindications": [],
-  "equipment": []
+  "equipment": [{ "name": "massage oil", "optional": true }]
 }
