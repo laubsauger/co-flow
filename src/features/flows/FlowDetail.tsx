@@ -3,7 +3,7 @@ import { motion, Reorder, useDragControls } from 'framer-motion';
 import { allFlows, gestureMap } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle, GripVertical } from 'lucide-react';
+import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ColoredTag } from '@/components/ColoredTag';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { usePlayerStore } from '@/lib/stores/player';
@@ -12,6 +12,7 @@ import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { cn } from '@/lib/utils';
 import { springs } from '@/motion/tokens';
+import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
 import { useState, useMemo } from 'react';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture, EquipmentItem } from '@/lib/types/gesture';
@@ -37,6 +38,13 @@ export function FlowDetail() {
   const [showSafetyCheck, setShowSafetyCheck] = useState(false);
 
   const flow = allFlows.find((f) => f.id === id);
+  const currentIndex = allFlows.findIndex((f) => f.id === id);
+  const prevFlow = currentIndex > 0 ? allFlows[currentIndex - 1] : undefined;
+  const nextFlow = currentIndex < allFlows.length - 1 ? allFlows[currentIndex + 1] : undefined;
+  const { ref: swipeRef, hasPrev, hasNext } = useSwipeNavigation({
+    prevUrl: prevFlow ? `/flows/${prevFlow.id}` : undefined,
+    nextUrl: nextFlow ? `/flows/${nextFlow.id}` : undefined,
+  });
 
   const { totalDuration, contraindications, equipment, bodyAreas, resolvedSteps } =
     useMemo(() => {
@@ -138,11 +146,12 @@ export function FlowDetail() {
 
   return (
     <motion.div
+      ref={swipeRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={springs.soft}
-      className="min-h-screen bg-background pb-24"
+      className="min-h-screen bg-background pb-24 relative"
     >
       {/* Hero Image */}
       {(() => {
@@ -327,6 +336,20 @@ export function FlowDetail() {
           </div>
         )}
       </div>
+
+      {/* Swipe edge indicators */}
+      {hasPrev && prevFlow && (
+        <div className="fixed left-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
+          <ChevronLeft className="w-4 h-4" />
+          <span className="text-xs max-w-[60px] truncate hidden sm:inline">{prevFlow.name}</span>
+        </div>
+      )}
+      {hasNext && nextFlow && (
+        <div className="fixed right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
+          <span className="text-xs max-w-[60px] truncate hidden sm:inline">{nextFlow.name}</span>
+          <ChevronRight className="w-4 h-4" />
+        </div>
+      )}
 
       {contraindications.length > 0 && (
         <SafetyCheckDialog

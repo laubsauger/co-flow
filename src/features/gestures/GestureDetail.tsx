@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal } from 'lucide-react';
+import { ArrowLeft, Play, Timer, Heart, AlertTriangle, Droplets, RectangleHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { usePlayerStore } from '@/lib/stores/player';
 import { useUserData } from '@/lib/stores/user-data';
 import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
 import { ColoredTag } from '@/components/ColoredTag';
+import { useSwipeNavigation } from '@/lib/hooks/use-swipe-navigation';
 import { TranscriptSection } from './TranscriptSection';
 
 export function GestureDetail() {
@@ -21,6 +22,13 @@ export function GestureDetail() {
     const [showSafetyCheck, setShowSafetyCheck] = useState(false);
 
     const gesture = allGestures.find(g => g.id === id);
+    const currentIndex = allGestures.findIndex(g => g.id === id);
+    const prevGesture = currentIndex > 0 ? allGestures[currentIndex - 1] : undefined;
+    const nextGesture = currentIndex < allGestures.length - 1 ? allGestures[currentIndex + 1] : undefined;
+    const { ref: swipeRef, hasPrev, hasNext } = useSwipeNavigation({
+        prevUrl: prevGesture ? `/gestures/${prevGesture.id}` : undefined,
+        nextUrl: nextGesture ? `/gestures/${nextGesture.id}` : undefined,
+    });
 
     if (!gesture) {
         return (
@@ -48,7 +56,7 @@ export function GestureDetail() {
     };
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div ref={swipeRef} className="min-h-screen bg-background pb-20 relative">
             {/* Detail Header / Hero */}
             <motion.div
                 layoutId={`card-${gesture.id}`}
@@ -211,6 +219,20 @@ export function GestureDetail() {
                     />
                 )}
             </div>
+
+            {/* Swipe edge indicators */}
+            {hasPrev && prevGesture && (
+                <div className="fixed left-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="text-xs max-w-[60px] truncate hidden sm:inline">{prevGesture.name}</span>
+                </div>
+            )}
+            {hasNext && nextGesture && (
+                <div className="fixed right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-muted-foreground/30 pointer-events-none z-20">
+                    <span className="text-xs max-w-[60px] truncate hidden sm:inline">{nextGesture.name}</span>
+                    <ChevronRight className="w-4 h-4" />
+                </div>
+            )}
 
             {hasContraindications && (
                 <SafetyCheckDialog
