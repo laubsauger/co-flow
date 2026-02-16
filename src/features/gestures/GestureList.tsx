@@ -159,7 +159,7 @@ export function GestureList() {
                         return (
                             <button
                                 key={area}
-                                onClick={() => setSelectedBodyArea(area)}
+                                onClick={() => setSelectedBodyArea(isActive ? null : area)}
                                 aria-pressed={isActive}
                                 className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap capitalize"
                                 style={isActive
