@@ -1,0 +1,30 @@
+{
+  "id": "stack-the-hips",
+  "name": "Stack The Hips",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "hips"
+  ],
+  "bodyAreas": [
+    "hips"
+  ],
+  "summary": "Align hips for stability and stretch.",
+  "description": "Position the hips vertically to prepare for deeper stretches or compressions.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

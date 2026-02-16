@@ -1,0 +1,30 @@
+{
+  "id": "walk-the-lung-lines",
+  "name": "Walk The Lung Lines",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "arms"
+  ],
+  "bodyAreas": [
+    "arms"
+  ],
+  "summary": "Pressure along the arm's energy meridians.",
+  "description": "Follow the lung meridian lines down the arm with thumb or palm pressure.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

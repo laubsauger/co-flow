@@ -1,0 +1,30 @@
+{
+  "id": "turtle-shell",
+  "name": "Turtle Shell",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "neck"
+  ],
+  "bodyAreas": [
+    "neck"
+  ],
+  "summary": "Traction for the neck.",
+  "description": "Gently support and traction the neck to create space between vertebrae.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

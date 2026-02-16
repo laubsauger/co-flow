@@ -1,0 +1,30 @@
+{
+  "id": "hand-on-the-chest",
+  "name": "Hand on the Chest",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "chest"
+  ],
+  "bodyAreas": [
+    "chest"
+  ],
+  "summary": "Grounding touch for heart connection.",
+  "description": "Place a hand on the heart center to promote emotional grounding and calm.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

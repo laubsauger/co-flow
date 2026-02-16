@@ -1,0 +1,30 @@
+{
+  "id": "eyebrow-bladder-points",
+  "name": "Eyebrow Bladder Points",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "face"
+  ],
+  "bodyAreas": [
+    "face"
+  ],
+  "summary": "Acupressure on the brow.",
+  "description": "Press points along the eyebrows to relieve eye strain and headaches.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

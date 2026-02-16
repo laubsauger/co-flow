@@ -1,0 +1,30 @@
+{
+  "id": "double-leg-hammock",
+  "name": "Double Leg Hammock",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "legs"
+  ],
+  "bodyAreas": [
+    "legs"
+  ],
+  "summary": "Suspend legs for lower back release.",
+  "description": "Lift both legs to decompress the lower back and allow the sacrum to float.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

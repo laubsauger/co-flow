@@ -1,0 +1,30 @@
+{
+  "id": "rock-the-hips",
+  "name": "Rock The Hips",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "hips"
+  ],
+  "bodyAreas": [
+    "hips"
+  ],
+  "summary": "Side-to-side rocking for hip mobility.",
+  "description": "Rhythmic rocking of the hips to loosen tight glutes and lower back muscles.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

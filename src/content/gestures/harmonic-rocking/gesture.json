@@ -1,0 +1,30 @@
+{
+  "id": "harmonic-rocking",
+  "name": "Harmonic Rocking",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "legs"
+  ],
+  "bodyAreas": [
+    "legs"
+  ],
+  "summary": "Rhythmic rocking to soothe the nervous system.",
+  "description": "Gently rock the legs and hips to create a wave of relaxation that travels up the spine.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

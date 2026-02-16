@@ -1,0 +1,30 @@
+{
+  "id": "diagonal-fascial-pull",
+  "name": "Diagonal Fascial Pull",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "back"
+  ],
+  "bodyAreas": [
+    "back"
+  ],
+  "summary": "Stretch across the back's myofascial chains.",
+  "description": "A diagonal stretch that engages the fascia from shoulder to opposite hip.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

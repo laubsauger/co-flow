@@ -1,0 +1,30 @@
+{
+  "id": "angel-wings",
+  "name": "Angel Wings",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "shoulders"
+  ],
+  "bodyAreas": [
+    "shoulders"
+  ],
+  "summary": "Open the chest and shoulders.",
+  "description": "Guide the arms in a wide arc to open the chest and mobilize the shoulder girdle.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

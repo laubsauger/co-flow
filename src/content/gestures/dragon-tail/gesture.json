@@ -1,0 +1,30 @@
+{
+  "id": "dragon-tail",
+  "name": "Dragon Tail",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "legs"
+  ],
+  "bodyAreas": [
+    "legs"
+  ],
+  "summary": "Dynamic leg swing and stretch.",
+  "description": "Swing the leg in an arc to open the hips and stretch the glutes and hamstrings.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

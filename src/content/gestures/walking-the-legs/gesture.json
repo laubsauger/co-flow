@@ -1,0 +1,30 @@
+{
+  "id": "walking-the-legs",
+  "name": "Walking The Legs",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "legs"
+  ],
+  "bodyAreas": [
+    "legs"
+  ],
+  "summary": "Rhythmic palm pressure walking down the legs.",
+  "description": "Use your palms to apply rhythmic pressure down the energy lines of the legs, stimulating flow and relaxation.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

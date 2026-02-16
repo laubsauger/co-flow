@@ -2,8 +2,8 @@
 import type { Gesture } from '../../lib/types/gesture';
 import type { Flow } from '../../lib/types/flow';
 
-import gesture_0_json from '../gestures/upper-back-circles/gesture.json';
-import gesture_0_poster from '../gestures/upper-back-circles/poster.png';
+import gesture_0_json from '../gestures/walking-the-legs/gesture.json';
+import gesture_0_poster from '../gestures/walking-the-legs/poster.png';
 const gesture_0 = {
         ...gesture_0_json,
         media: {
@@ -11,8 +11,8 @@ const gesture_0 = {
             poster: gesture_0_poster,
         }
     };
-import gesture_1_json from '../gestures/trapezius-squeeze/gesture.json';
-import gesture_1_poster from '../gestures/trapezius-squeeze/poster.png';
+import gesture_1_json from '../gestures/walk-the-lung-lines/gesture.json';
+import gesture_1_poster from '../gestures/walk-the-lung-lines/poster.png';
 const gesture_1 = {
         ...gesture_1_json,
         media: {
@@ -20,8 +20,8 @@ const gesture_1 = {
             poster: gesture_1_poster,
         }
     };
-import gesture_2_json from '../gestures/shoulder-compression/gesture.json';
-import gesture_2_poster from '../gestures/shoulder-compression/poster.png';
+import gesture_2_json from '../gestures/upper-back-circles/gesture.json';
+import gesture_2_poster from '../gestures/upper-back-circles/poster.png';
 const gesture_2 = {
         ...gesture_2_json,
         media: {
@@ -29,8 +29,8 @@ const gesture_2 = {
             poster: gesture_2_poster,
         }
     };
-import gesture_3_json from '../gestures/scalp-massage/gesture.json';
-import gesture_3_poster from '../gestures/scalp-massage/poster.png';
+import gesture_3_json from '../gestures/turtle-shell/gesture.json';
+import gesture_3_poster from '../gestures/turtle-shell/poster.png';
 const gesture_3 = {
         ...gesture_3_json,
         media: {
@@ -38,8 +38,8 @@ const gesture_3 = {
             poster: gesture_3_poster,
         }
     };
-import gesture_4_json from '../gestures/pectoral-stretch/gesture.json';
-import gesture_4_poster from '../gestures/pectoral-stretch/poster.png';
+import gesture_4_json from '../gestures/trapezius-squeeze/gesture.json';
+import gesture_4_poster from '../gestures/trapezius-squeeze/poster.png';
 const gesture_4 = {
         ...gesture_4_json,
         media: {
@@ -47,8 +47,8 @@ const gesture_4 = {
             poster: gesture_4_poster,
         }
     };
-import gesture_5_json from '../gestures/neck-glides/gesture.json';
-import gesture_5_poster from '../gestures/neck-glides/poster.png';
+import gesture_5_json from '../gestures/stack-the-hips/gesture.json';
+import gesture_5_poster from '../gestures/stack-the-hips/poster.png';
 const gesture_5 = {
         ...gesture_5_json,
         media: {
@@ -56,8 +56,8 @@ const gesture_5 = {
             poster: gesture_5_poster,
         }
     };
-import gesture_6_json from '../gestures/lower-back-stretch/gesture.json';
-import gesture_6_poster from '../gestures/lower-back-stretch/poster.png';
+import gesture_6_json from '../gestures/shoulder-compression/gesture.json';
+import gesture_6_poster from '../gestures/shoulder-compression/poster.png';
 const gesture_6 = {
         ...gesture_6_json,
         media: {
@@ -65,8 +65,8 @@ const gesture_6 = {
             poster: gesture_6_poster,
         }
     };
-import gesture_7_json from '../gestures/jaw-release/gesture.json';
-import gesture_7_poster from '../gestures/jaw-release/poster.png';
+import gesture_7_json from '../gestures/shoulder-circles-side/gesture.json';
+import gesture_7_poster from '../gestures/shoulder-circles-side/poster.png';
 const gesture_7 = {
         ...gesture_7_json,
         media: {
@@ -74,8 +74,8 @@ const gesture_7 = {
             poster: gesture_7_poster,
         }
     };
-import gesture_8_json from '../gestures/hand-massage/gesture.json';
-import gesture_8_poster from '../gestures/hand-massage/poster.png';
+import gesture_8_json from '../gestures/scalp-massage/gesture.json';
+import gesture_8_poster from '../gestures/scalp-massage/poster.png';
 const gesture_8 = {
         ...gesture_8_json,
         media: {
@@ -83,8 +83,8 @@ const gesture_8 = {
             poster: gesture_8_poster,
         }
     };
-import gesture_9_json from '../gestures/forearm-kneading/gesture.json';
-import gesture_9_poster from '../gestures/forearm-kneading/poster.png';
+import gesture_9_json from '../gestures/rock-the-hips/gesture.json';
+import gesture_9_poster from '../gestures/rock-the-hips/poster.png';
 const gesture_9 = {
         ...gesture_9_json,
         media: {
@@ -92,8 +92,8 @@ const gesture_9 = {
             poster: gesture_9_poster,
         }
     };
-import gesture_10_json from '../gestures/foot-thumb-press/gesture.json';
-import gesture_10_poster from '../gestures/foot-thumb-press/poster.png';
+import gesture_10_json from '../gestures/rainbows/gesture.json';
+import gesture_10_poster from '../gestures/rainbows/poster.png';
 const gesture_10 = {
         ...gesture_10_json,
         media: {
@@ -101,8 +101,8 @@ const gesture_10 = {
             poster: gesture_10_poster,
         }
     };
-import gesture_11_json from '../gestures/calf-squeeze/gesture.json';
-import gesture_11_poster from '../gestures/calf-squeeze/poster.png';
+import gesture_11_json from '../gestures/pectoral-stretch/gesture.json';
+import gesture_11_poster from '../gestures/pectoral-stretch/poster.png';
 const gesture_11 = {
         ...gesture_11_json,
         media: {
@@ -110,29 +110,242 @@ const gesture_11 = {
             poster: gesture_11_poster,
         }
     };
-import flow_0_json from '../flows/quick-neck-relief/flow.json';
-import flow_0_poster from '../flows/quick-neck-relief/poster.png';
+import gesture_12_json from '../gestures/neck-glides/gesture.json';
+import gesture_12_poster from '../gestures/neck-glides/poster.png';
+const gesture_12 = {
+        ...gesture_12_json,
+        media: {
+            ...gesture_12_json.media,
+            poster: gesture_12_poster,
+        }
+    };
+import gesture_13_json from '../gestures/lower-back-stretch/gesture.json';
+import gesture_13_poster from '../gestures/lower-back-stretch/poster.png';
+const gesture_13 = {
+        ...gesture_13_json,
+        media: {
+            ...gesture_13_json.media,
+            poster: gesture_13_poster,
+        }
+    };
+import gesture_14_json from '../gestures/jaw-release/gesture.json';
+import gesture_14_poster from '../gestures/jaw-release/poster.png';
+const gesture_14 = {
+        ...gesture_14_json,
+        media: {
+            ...gesture_14_json.media,
+            poster: gesture_14_poster,
+        }
+    };
+import gesture_15_json from '../gestures/iguana-tail/gesture.json';
+import gesture_15_poster from '../gestures/iguana-tail/poster.png';
+const gesture_15 = {
+        ...gesture_15_json,
+        media: {
+            ...gesture_15_json.media,
+            poster: gesture_15_poster,
+        }
+    };
+import gesture_16_json from '../gestures/hip-circles/gesture.json';
+import gesture_16_poster from '../gestures/hip-circles/poster.png';
+const gesture_16 = {
+        ...gesture_16_json,
+        media: {
+            ...gesture_16_json.media,
+            poster: gesture_16_poster,
+        }
+    };
+import gesture_17_json from '../gestures/harmonic-rocking/gesture.json';
+import gesture_17_poster from '../gestures/harmonic-rocking/poster.png';
+const gesture_17 = {
+        ...gesture_17_json,
+        media: {
+            ...gesture_17_json.media,
+            poster: gesture_17_poster,
+        }
+    };
+import gesture_18_json from '../gestures/hands-over-the-ears/gesture.json';
+import gesture_18_poster from '../gestures/hands-over-the-ears/poster.png';
+const gesture_18 = {
+        ...gesture_18_json,
+        media: {
+            ...gesture_18_json.media,
+            poster: gesture_18_poster,
+        }
+    };
+import gesture_19_json from '../gestures/hand-on-the-chest/gesture.json';
+import gesture_19_poster from '../gestures/hand-on-the-chest/poster.png';
+const gesture_19 = {
+        ...gesture_19_json,
+        media: {
+            ...gesture_19_json.media,
+            poster: gesture_19_poster,
+        }
+    };
+import gesture_20_json from '../gestures/hand-massage/gesture.json';
+import gesture_20_poster from '../gestures/hand-massage/poster.png';
+const gesture_20 = {
+        ...gesture_20_json,
+        media: {
+            ...gesture_20_json.media,
+            poster: gesture_20_poster,
+        }
+    };
+import gesture_21_json from '../gestures/forearm-kneading/gesture.json';
+import gesture_21_poster from '../gestures/forearm-kneading/poster.png';
+const gesture_21 = {
+        ...gesture_21_json,
+        media: {
+            ...gesture_21_json.media,
+            poster: gesture_21_poster,
+        }
+    };
+import gesture_22_json from '../gestures/foot-thumb-press/gesture.json';
+import gesture_22_poster from '../gestures/foot-thumb-press/poster.png';
+const gesture_22 = {
+        ...gesture_22_json,
+        media: {
+            ...gesture_22_json.media,
+            poster: gesture_22_poster,
+        }
+    };
+import gesture_23_json from '../gestures/final-touch/gesture.json';
+import gesture_23_poster from '../gestures/final-touch/poster.png';
+const gesture_23 = {
+        ...gesture_23_json,
+        media: {
+            ...gesture_23_json.media,
+            poster: gesture_23_poster,
+        }
+    };
+import gesture_24_json from '../gestures/eyebrow-bladder-points/gesture.json';
+import gesture_24_poster from '../gestures/eyebrow-bladder-points/poster.png';
+const gesture_24 = {
+        ...gesture_24_json,
+        media: {
+            ...gesture_24_json.media,
+            poster: gesture_24_poster,
+        }
+    };
+import gesture_25_json from '../gestures/dragon-tail/gesture.json';
+import gesture_25_poster from '../gestures/dragon-tail/poster.png';
+const gesture_25 = {
+        ...gesture_25_json,
+        media: {
+            ...gesture_25_json.media,
+            poster: gesture_25_poster,
+        }
+    };
+import gesture_26_json from '../gestures/double-leg-hammock/gesture.json';
+import gesture_26_poster from '../gestures/double-leg-hammock/poster.png';
+const gesture_26 = {
+        ...gesture_26_json,
+        media: {
+            ...gesture_26_json.media,
+            poster: gesture_26_poster,
+        }
+    };
+import gesture_27_json from '../gestures/diagonal-fascial-pull/gesture.json';
+import gesture_27_poster from '../gestures/diagonal-fascial-pull/poster.png';
+const gesture_27 = {
+        ...gesture_27_json,
+        media: {
+            ...gesture_27_json.media,
+            poster: gesture_27_poster,
+        }
+    };
+import gesture_28_json from '../gestures/cranial-sacral-hold/gesture.json';
+import gesture_28_poster from '../gestures/cranial-sacral-hold/poster.png';
+const gesture_28 = {
+        ...gesture_28_json,
+        media: {
+            ...gesture_28_json.media,
+            poster: gesture_28_poster,
+        }
+    };
+import gesture_29_json from '../gestures/compress-the-back/gesture.json';
+import gesture_29_poster from '../gestures/compress-the-back/poster.png';
+const gesture_29 = {
+        ...gesture_29_json,
+        media: {
+            ...gesture_29_json.media,
+            poster: gesture_29_poster,
+        }
+    };
+import gesture_30_json from '../gestures/cheek-points/gesture.json';
+import gesture_30_poster from '../gestures/cheek-points/poster.png';
+const gesture_30 = {
+        ...gesture_30_json,
+        media: {
+            ...gesture_30_json.media,
+            poster: gesture_30_poster,
+        }
+    };
+import gesture_31_json from '../gestures/calf-squeeze/gesture.json';
+import gesture_31_poster from '../gestures/calf-squeeze/poster.png';
+const gesture_31 = {
+        ...gesture_31_json,
+        media: {
+            ...gesture_31_json.media,
+            poster: gesture_31_poster,
+        }
+    };
+import gesture_32_json from '../gestures/blood-stop/gesture.json';
+import gesture_32_poster from '../gestures/blood-stop/poster.png';
+const gesture_32 = {
+        ...gesture_32_json,
+        media: {
+            ...gesture_32_json.media,
+            poster: gesture_32_poster,
+        }
+    };
+import gesture_33_json from '../gestures/belly-to-feet/gesture.json';
+import gesture_33_poster from '../gestures/belly-to-feet/poster.png';
+const gesture_33 = {
+        ...gesture_33_json,
+        media: {
+            ...gesture_33_json.media,
+            poster: gesture_33_poster,
+        }
+    };
+import gesture_34_json from '../gestures/angel-wings/gesture.json';
+import gesture_34_poster from '../gestures/angel-wings/poster.png';
+const gesture_34 = {
+        ...gesture_34_json,
+        media: {
+            ...gesture_34_json.media,
+            poster: gesture_34_poster,
+        }
+    };
+import flow_0_json from '../flows/zen-thai-shiatsu/flow.json';
+import flow_0_poster from '../flows/zen-thai-shiatsu/poster.png';
 const flow_0 = {
         ...flow_0_json,
         poster: flow_0_poster,
     };
-import flow_1_json from '../flows/hand-arm-care/flow.json';
-import flow_1_poster from '../flows/hand-arm-care/poster.png';
+import flow_1_json from '../flows/quick-neck-relief/flow.json';
+import flow_1_poster from '../flows/quick-neck-relief/poster.png';
 const flow_1 = {
         ...flow_1_json,
         poster: flow_1_poster,
     };
-import flow_2_json from '../flows/full-body-relaxation/flow.json';
-import flow_2_poster from '../flows/full-body-relaxation/poster.png';
+import flow_2_json from '../flows/hand-arm-care/flow.json';
+import flow_2_poster from '../flows/hand-arm-care/poster.png';
 const flow_2 = {
         ...flow_2_json,
         poster: flow_2_poster,
     };
-import flow_3_json from '../flows/deep-sleep-guide/flow.json';
-import flow_3_poster from '../flows/deep-sleep-guide/poster.png';
+import flow_3_json from '../flows/full-body-relaxation/flow.json';
+import flow_3_poster from '../flows/full-body-relaxation/poster.png';
 const flow_3 = {
         ...flow_3_json,
         poster: flow_3_poster,
+    };
+import flow_4_json from '../flows/deep-sleep-guide/flow.json';
+import flow_4_poster from '../flows/deep-sleep-guide/poster.png';
+const flow_4 = {
+        ...flow_4_json,
+        poster: flow_4_poster,
     };
 
 export const allGestures: Gesture[] = [
@@ -147,14 +360,38 @@ export const allGestures: Gesture[] = [
   gesture_8,
   gesture_9,
   gesture_10,
-  gesture_11
+  gesture_11,
+  gesture_12,
+  gesture_13,
+  gesture_14,
+  gesture_15,
+  gesture_16,
+  gesture_17,
+  gesture_18,
+  gesture_19,
+  gesture_20,
+  gesture_21,
+  gesture_22,
+  gesture_23,
+  gesture_24,
+  gesture_25,
+  gesture_26,
+  gesture_27,
+  gesture_28,
+  gesture_29,
+  gesture_30,
+  gesture_31,
+  gesture_32,
+  gesture_33,
+  gesture_34
 ] as unknown as Gesture[];
 
 export const allFlows: Flow[] = [
   flow_0,
   flow_1,
   flow_2,
-  flow_3
+  flow_3,
+  flow_4
 ] as unknown as Flow[];
 
 export const gestureMap = new Map(allGestures.map(g => [g.id, g]));

@@ -1,0 +1,30 @@
+{
+  "id": "hands-over-the-ears",
+  "name": "Hands Over The Ears",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "head"
+  ],
+  "bodyAreas": [
+    "head"
+  ],
+  "summary": "Muffling sound for deep inner quiet.",
+  "description": "Warm hands cupped over the ears to encourage withdrawal of the senses.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

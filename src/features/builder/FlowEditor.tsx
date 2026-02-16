@@ -16,7 +16,9 @@ import {
   Copy,
   GripVertical,
   Check,
+  X,
 } from 'lucide-react';
+import { ColoredTag } from '@/components/ColoredTag';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import { GesturePicker } from './GesturePicker';
 import type { FlowStep } from '@/lib/types/flow';
@@ -213,6 +215,32 @@ export function FlowEditor() {
             <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
             Preview
           </Button>
+        </div>
+      </div>
+
+      {/* Description & Tags */}
+      <div className="px-4 pt-3 pb-1 max-w-2xl mx-auto space-y-2">
+        <Input
+          value={flow.description}
+          onChange={(e) => updateFlow(id, { description: e.target.value })}
+          placeholder="Add a description..."
+          className="h-8 text-xs"
+        />
+        <div className="flex flex-wrap items-center gap-1.5">
+          {flow.tags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => updateFlow(id, { tags: flow.tags.filter(t => t !== tag) })}
+              className="group flex items-center gap-0.5"
+            >
+              <ColoredTag tag={tag} />
+              <X className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          ))}
+          <TagInput
+            existingTags={flow.tags}
+            onAdd={(tag) => updateFlow(id, { tags: [...flow.tags, tag] })}
+          />
         </div>
       </div>
 
@@ -434,5 +462,45 @@ function StepItem({
         )}
       </AnimatePresence>
     </Reorder.Item>
+  );
+}
+
+function TagInput({ existingTags, onAdd }: { existingTags: string[]; onAdd: (tag: string) => void }) {
+  const [value, setValue] = useState('');
+  const [editing, setEditing] = useState(false);
+
+  const handleSubmit = () => {
+    const tag = value.trim().toLowerCase();
+    if (tag && !existingTags.includes(tag)) {
+      onAdd(tag);
+    }
+    setValue('');
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return (
+      <button
+        onClick={() => setEditing(true)}
+        className="px-2 py-0.5 rounded text-[10px] font-medium bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+      >
+        + tag
+      </button>
+    );
+  }
+
+  return (
+    <input
+      autoFocus
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={handleSubmit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') handleSubmit();
+        if (e.key === 'Escape') { setValue(''); setEditing(false); }
+      }}
+      placeholder="tag name"
+      className="w-20 px-1.5 py-0.5 rounded text-[10px] bg-secondary border border-input outline-none focus:ring-1 focus:ring-ring"
+    />
   );
 }

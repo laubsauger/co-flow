@@ -1,0 +1,129 @@
+{
+  "id": "zen-thai-shiatsu",
+  "name": "Zen Thai Shiatsu Flow",
+  "description": "A comprehensive Zen Thai Shiatsu sequence covering legs, side body, arms, and head.",
+  "poster": "poster.png",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "full-body",
+    "relaxation"
+  ],
+  "steps": [
+    {
+      "gestureId": "walking-the-legs",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "hip-circles",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "blood-stop",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "harmonic-rocking",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "iguana-tail",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "dragon-tail",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "compress-the-back",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "stack-the-hips",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "shoulder-circles-side",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "belly-to-feet",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "double-leg-hammock",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "rock-the-hips",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "diagonal-fascial-pull",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "angel-wings",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "walk-the-lung-lines",
+      "durationSec": 120,
+      "side": "left"
+    },
+    {
+      "gestureId": "hand-on-the-chest",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "turtle-shell",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "cranial-sacral-hold",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "rainbows",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "eyebrow-bladder-points",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "cheek-points",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "hands-over-the-ears",
+      "durationSec": 120,
+      "side": "none"
+    },
+    {
+      "gestureId": "final-touch",
+      "durationSec": 120,
+      "side": "none"
+    }
+  ]
+}

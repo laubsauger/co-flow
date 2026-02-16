@@ -1,0 +1,30 @@
+{
+  "id": "hip-circles",
+  "name": "Hip Circles",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "hips"
+  ],
+  "bodyAreas": [
+    "hips"
+  ],
+  "summary": "Gentle rotations to loosen the hip joint.",
+  "description": "Support the leg and guide the hip through a gentle, circular range of motion to release tension.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

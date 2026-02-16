@@ -1,0 +1,30 @@
+{
+  "id": "final-touch",
+  "name": "Final Touch",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "head"
+  ],
+  "bodyAreas": [
+    "head"
+  ],
+  "summary": "Closing gesture of connection.",
+  "description": "A final, grounding touch to signal the end of the session and seal the energy.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

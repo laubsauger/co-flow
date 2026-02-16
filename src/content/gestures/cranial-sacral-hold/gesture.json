@@ -1,0 +1,30 @@
+{
+  "id": "cranial-sacral-hold",
+  "name": "Cranial Sacral Hold",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "head"
+  ],
+  "bodyAreas": [
+    "head"
+  ],
+  "summary": "Stillness hold for nervous system reset.",
+  "description": "A gentle hold at the base of the skull to balance the craniosacral rhythm.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

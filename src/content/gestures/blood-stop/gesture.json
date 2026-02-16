@@ -1,0 +1,30 @@
+{
+  "id": "blood-stop",
+  "name": "Blood Stop",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "legs"
+  ],
+  "bodyAreas": [
+    "legs"
+  ],
+  "summary": "Compress the femoral artery for a flush effect.",
+  "description": "Apply deep pressure to the femoral artery for moments, then release to send a flush of fresh blood through the legs.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

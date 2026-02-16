@@ -1,0 +1,30 @@
+{
+  "id": "iguana-tail",
+  "name": "Iguana Tail",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "back"
+  ],
+  "bodyAreas": [
+    "back"
+  ],
+  "summary": "Spinal twist resembling an iguana's tail.",
+  "description": "A gentle spinal twist that stretches the lower back and hips, enhancing flexibility.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}

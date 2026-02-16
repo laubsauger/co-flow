@@ -1,0 +1,30 @@
+{
+  "id": "shoulder-circles-side",
+  "name": "Shoulder Circles Side",
+  "tags": [
+    "zen-thai",
+    "shiatsu",
+    "relaxation",
+    "shoulders"
+  ],
+  "bodyAreas": [
+    "shoulders"
+  ],
+  "summary": "Mobilize the shoulder joint in side position.",
+  "description": "Rotate the shoulder blade to release tension in the upper back and neck.",
+  "durationDefaults": {
+    "minSec": 60,
+    "defaultSec": 120,
+    "maxSec": 300
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.png"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": [
+    "mat"
+  ]
+}
