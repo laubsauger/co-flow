@@ -1,0 +1,26 @@
+{
+  "id": "forearm-kneading",
+  "name": "Forearm Kneading",
+  "tags": [
+    "relaxation",
+    "beginner"
+  ],
+  "bodyAreas": [
+    "arms"
+  ],
+  "summary": "Knead the forearm muscles.",
+  "description": "A standard Forearm Kneading technique. Good for relaxation and tension relief.",
+  "durationDefaults": {
+    "minSec": 30,
+    "defaultSec": 60,
+    "maxSec": 120
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.webp"
+  },
+  "intensity": 3,
+  "contraindications": [],
+  "equipment": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "foot-thumb-press",
+  "name": "Foot Thumb Press",
+  "tags": [
+    "relaxation",
+    "beginner"
+  ],
+  "bodyAreas": [
+    "feet"
+  ],
+  "summary": "Press thumbs into the sole.",
+  "description": "A standard Foot Thumb Press technique. Good for relaxation and tension relief.",
+  "durationDefaults": {
+    "minSec": 30,
+    "defaultSec": 60,
+    "maxSec": 120
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.webp"
+  },
+  "intensity": 4,
+  "contraindications": [],
+  "equipment": []
+}

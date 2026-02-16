@@ -1,0 +1,26 @@
+{
+  "id": "calf-squeeze",
+  "name": "Calf Squeeze",
+  "tags": [
+    "relaxation",
+    "beginner"
+  ],
+  "bodyAreas": [
+    "legs"
+  ],
+  "summary": "Squeeze the calf muscles rhythmically.",
+  "description": "A standard Calf Squeeze technique. Good for relaxation and tension relief.",
+  "durationDefaults": {
+    "minSec": 30,
+    "defaultSec": 60,
+    "maxSec": 120
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.webp"
+  },
+  "intensity": 4,
+  "contraindications": [],
+  "equipment": []
+}

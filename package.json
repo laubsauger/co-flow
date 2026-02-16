@@ -13,6 +13,7 @@
     "content:validate": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/vite": "^4.1.18",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.0",

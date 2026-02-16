@@ -71,6 +71,6 @@ src/
 ```
 
 ## 6. Active Context (Current Status)
-- **Phase**: Initialization / Milestone 1
-- **Focus**: Setting up the repo, defining the content schema, and building the basic Gesture Library.
-- **Next Up**: Implementing the Content CLI tools (`content:new-gesture`, `content:scan`).
+- **Phase**: Milestone 2: Guided Player Polish
+- **Focus**: Improving the Player UI with specific cards, progress overview, and motion.
+- **Next Up**: Implementing `ProgressOverview` and Motion details in `PlayerView`.

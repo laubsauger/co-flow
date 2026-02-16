@@ -43,10 +43,8 @@ export type Flow = {
             startTime: number;
         }[];
     };
-};
-
-contentHash ?: string; // for change detection
-poster ?: string; // top level poster override
+    contentHash?: string; // for change detection
+    poster?: string; // top level poster override
 };
 
 // Content metadata interfaces for indexing

@@ -1,0 +1,26 @@
+{
+  "id": "lower-back-stretch",
+  "name": "Lower Back Stretch",
+  "tags": [
+    "relaxation",
+    "beginner"
+  ],
+  "bodyAreas": [
+    "back"
+  ],
+  "summary": "Gentle stretch for lumbar area.",
+  "description": "A standard Lower Back Stretch technique. Good for relaxation and tension relief.",
+  "durationDefaults": {
+    "minSec": 30,
+    "defaultSec": 60,
+    "maxSec": 120
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.webp"
+  },
+  "intensity": 2,
+  "contraindications": [],
+  "equipment": []
+}

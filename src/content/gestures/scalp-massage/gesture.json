@@ -1,0 +1,26 @@
+{
+  "id": "scalp-massage",
+  "name": "Scalp Massage",
+  "tags": [
+    "relaxation",
+    "beginner"
+  ],
+  "bodyAreas": [
+    "head"
+  ],
+  "summary": "Fingertip circles on the scalp.",
+  "description": "A standard Scalp Massage technique. Good for relaxation and tension relief.",
+  "durationDefaults": {
+    "minSec": 30,
+    "defaultSec": 60,
+    "maxSec": 120
+  },
+  "media": {
+    "audio": "audio.mp3",
+    "video": "video.mp4",
+    "poster": "poster.webp"
+  },
+  "intensity": 1,
+  "contraindications": [],
+  "equipment": []
+}
