@@ -13,64 +13,67 @@ const navItems = [
   { to: '/builder', icon: Wrench, label: 'Builder' },
 ] as const;
 
+/** Route content wrapper — only the Outlet animates during transitions. */
 export function AppLayout() {
+  return (
+    <div className="min-h-screen bg-background font-sans antialiased text-foreground">
+      <Outlet />
+    </div>
+  );
+}
+
+/** Persistent shell rendered outside AnimatePresence: nav, resume prompt, settings. */
+export function AppShell() {
   const location = useLocation();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Apply dark/light theme
   useTheme();
 
-  // Start resume snapshot loop on mount
   useEffect(() => {
     const cleanup = startSnapshotLoop();
     return cleanup;
   }, []);
 
-  // Hide bottom nav on full-screen views (player)
   const hideNav = location.pathname.startsWith('/play');
 
-  return (
-    <div className="min-h-screen bg-background font-sans antialiased text-foreground">
-      <Outlet />
+  if (hideNav) return null;
 
-      {!hideNav && (
-        <>
-          <ResumePrompt />
-          <nav aria-label="Main navigation" className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t z-50 safe-area-bottom">
-            <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-4">
-              {navItems.map(({ to, icon: Icon, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  end={to === '/'}
-                  aria-label={label}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem]',
-                      isActive
-                        ? 'text-primary'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )
-                  }
-                >
-                  <Icon className="w-5 h-5" aria-hidden="true" />
-                  <span className="text-[11px] font-medium">{label}</span>
-                </NavLink>
-              ))}
-              <button
-                onClick={() => setSettingsOpen(true)}
-                aria-label="Settings"
-                className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem] text-muted-foreground hover:text-foreground"
-              >
-                <Settings className="w-5 h-5" aria-hidden="true" />
-                <span className="text-[11px] font-medium">Settings</span>
-              </button>
-            </div>
-          </nav>
-        </>
-      )}
+  return (
+    <>
+      <ResumePrompt />
+      <nav aria-label="Main navigation" className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t z-50 safe-area-bottom">
+        <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-4">
+          {navItems.map(({ to, icon: Icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              aria-label={label}
+              className={({ isActive }) =>
+                cn(
+                  'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem]',
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                )
+              }
+            >
+              <Icon className="w-5 h-5" aria-hidden="true" />
+              <span className="text-[11px] font-medium">{label}</span>
+            </NavLink>
+          ))}
+          <button
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Settings"
+            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem] text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="w-5 h-5" aria-hidden="true" />
+            <span className="text-[11px] font-medium">Settings</span>
+          </button>
+        </div>
+      </nav>
 
       <SettingsDrawer open={settingsOpen} onOpenChange={setSettingsOpen} />
-    </div>
+    </>
   );
 }

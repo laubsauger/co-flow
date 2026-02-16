@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { lazy, Suspense } from 'react';
-import { AppLayout } from '@/app/layout';
+import { AppLayout, AppShell } from '@/app/layout';
 
 const GestureList = lazy(() => import('@/features/gestures/GestureList').then(m => ({ default: m.GestureList })));
 const GestureDetail = lazy(() => import('@/features/gestures/GestureDetail').then(m => ({ default: m.GestureDetail })));
@@ -53,6 +53,9 @@ function AnimatedRoutes() {
           <Route path="*" element={<FlowList />} />
         </Routes>
       </AnimatePresence>
+
+      {/* Persistent shell — stays mounted across page transitions */}
+      <AppShell />
     </Suspense>
   );
 }
