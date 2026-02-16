@@ -147,17 +147,29 @@ export function GestureDetail() {
                     {/* Body Areas - Circles */}
                     <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full">
                         <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Focus</span>
-                        <div className="flex -space-x-1.5 hover:space-x-0.5 transition-all">
+                        <div className={cn(
+                            "flex items-center",
+                            gesture.bodyAreas.length > 3 ? "-space-x-1.5 hover:space-x-0.5 transition-all" : "gap-1.5"
+                        )}>
                             {gesture.bodyAreas.map((area) => (
                                 <div
                                     key={area}
-                                    className="w-5 h-5 rounded-full ring-2 ring-background relative group"
-                                    style={{ backgroundColor: getBodyAreaColor([area]) }}
-                                    title={area}
+                                    className="flex items-center gap-1.5"
                                 >
-                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-popover text-popover-foreground text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-sm z-50 capitalize">
-                                        {area}
-                                    </span>
+                                    <div
+                                        className="w-5 h-5 rounded-full ring-2 ring-background relative group flex-shrink-0"
+                                        style={{ backgroundColor: getBodyAreaColor([area]) }}
+                                        title={area}
+                                    >
+                                        {gesture.bodyAreas.length > 3 && (
+                                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-popover text-popover-foreground text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-sm z-50 capitalize">
+                                                {area}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {gesture.bodyAreas.length <= 3 && (
+                                        <span className="text-xs capitalize font-medium">{area}</span>
+                                    )}
                                 </div>
                             ))}
                         </div>
