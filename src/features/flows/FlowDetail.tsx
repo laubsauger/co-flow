@@ -381,7 +381,7 @@ export function FlowDetail() {
               className="space-y-2 rounded-xl bg-secondary/20 p-3 overscroll-contain"
             >
               {localSteps.map((step, i) => (
-                <FlowDetailStep key={step._key} step={step} index={i} formatDuration={formatDuration} />
+                <FlowDetailStep key={step._key} step={step} index={i} formatDuration={formatDuration} flowId={flow.id} />
               ))}
             </Reorder.Group>
           </div>
@@ -413,10 +413,12 @@ function FlowDetailStep({
   step,
   index,
   formatDuration,
+  flowId,
 }: {
   step: ReorderStep;
   index: number;
   formatDuration: (sec: number) => string;
+  flowId: string;
 }) {
   const controls = useDragControls();
   const longPressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -483,25 +485,31 @@ function FlowDetailStep({
         />
       </div>
 
-      <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
-        <img
-          src={step.gesture?.media.poster || '/media/generic-gesture.png'}
-          className="w-full h-full object-cover"
-          alt=""
-        />
-        <div
-          className="absolute inset-0 mix-blend-color opacity-30"
-          style={{ backgroundColor: step.gesture ? getBodyAreaColor(step.gesture.bodyAreas) : 'var(--secondary)' }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="w-5 h-5 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold text-white">
-            {index + 1}
-          </span>
+      <Link
+        to={`/gestures/${step.gestureId}`}
+        state={{ returnTo: `/flows/${flowId}` }}
+        className="flex items-center gap-3 flex-1 min-w-0"
+        onClick={(e) => { if (grabbing) e.preventDefault(); }}
+      >
+        <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
+          <img
+            src={step.gesture?.media.poster || '/media/generic-gesture.png'}
+            className="w-full h-full object-cover"
+            alt=""
+          />
+          <div
+            className="absolute inset-0 mix-blend-color opacity-30"
+            style={{ backgroundColor: step.gesture ? getBodyAreaColor(step.gesture.bodyAreas) : 'var(--secondary)' }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="w-5 h-5 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold text-white">
+              {index + 1}
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm truncate">
-          {step.title || step.gesture?.name || step.gestureId}
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-sm truncate">
+            {step.title || step.gesture?.name || step.gestureId}
         </p>
         {step.notes && (
           <p className="text-xs text-muted-foreground truncate">
@@ -509,6 +517,7 @@ function FlowDetailStep({
           </p>
         )}
       </div>
+      </Link>
       <div className="flex items-center gap-2 flex-shrink-0">
         {step.side && step.side !== 'none' && (
           <span
