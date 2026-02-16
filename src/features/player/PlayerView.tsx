@@ -1,9 +1,19 @@
 import { useEffect } from 'react';
 import { usePlayerStore } from '@/lib/stores/player';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, X, Eye, Smartphone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/motion/tokens';
+import { cn } from '@/lib/utils';
+import { PrevStepCard } from './PrevStepCard';
+import { CurrentStepCard } from './CurrentStepCard';
+import { NextStepCard } from './NextStepCard';
+import { ProgressOverview } from './ProgressOverview';
+import { MediaStatus } from './MediaStatus';
+import { useWakeLock } from './useWakeLock';
+import { useAudioChainer } from './hooks/use-audio-chainer';
+import { startSnapshotLoop } from '@/lib/stores/session-resume';
 
 export function PlayerView() {
     const {
@@ -15,12 +25,28 @@ export function PlayerView() {
         next,
         prev,
         tick,
-        elapsedTime
+        elapsedTime,
+        glanceMode,
+        wakeLockEnabled,
+        toggleGlanceMode,
+        toggleWakeLock,
     } = usePlayerStore();
 
     const navigate = useNavigate();
+    const { isActive: wakeLockActive } = useWakeLock(
+        wakeLockEnabled && status === 'playing'
+    );
 
-    // loop
+    // Audio chaining engine
+    useAudioChainer();
+
+    // Session persistence — save snapshot every 3s while playing
+    useEffect(() => {
+        const cleanup = startSnapshotLoop();
+        return cleanup;
+    }, []);
+
+    // requestAnimationFrame timer loop
     useEffect(() => {
         let lastTime = performance.now();
         let frameId: number;
@@ -41,6 +67,7 @@ export function PlayerView() {
         return () => cancelAnimationFrame(frameId);
     }, [status, tick]);
 
+    // Empty state
     if (steps.length === 0) {
         return (
             <div className="h-screen flex items-center justify-center">
@@ -52,12 +79,14 @@ export function PlayerView() {
         );
     }
 
+    // Completed state
     if (status === 'completed') {
         return (
             <div className="h-screen flex flex-col items-center justify-center bg-primary text-primary-foreground">
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
+                    transition={springs.bouncy}
                     className="text-center space-y-6"
                 >
                     <h1 className="text-4xl font-bold">Session Complete</h1>
@@ -77,120 +106,135 @@ export function PlayerView() {
     const remainingTime = Math.ceil(Math.max(0, currentStep.durationSec - elapsedTime));
 
     return (
-        <div className="h-screen flex flex-col bg-background relative overflow-hidden">
+        <div
+            role="region"
+            aria-label="Guided session player"
+            className={cn(
+                'h-screen flex flex-col bg-background relative overflow-hidden',
+                glanceMode && 'glance-mode'
+            )}
+        >
             {/* Top Bar */}
-            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10">
-                <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+            <div className="flex-shrink-0 px-4 pt-4 pb-2 flex justify-between items-center z-10">
+                <Button variant="ghost" size="icon" onClick={() => navigate('/')} aria-label="Close player">
                     <X className="w-6 h-6" />
                 </Button>
-                <div className="text-sm font-medium text-muted-foreground">
-                    Step {currentStepIndex + 1} / {steps.length}
+
+                <ProgressOverview
+                    steps={steps}
+                    currentStepIndex={currentStepIndex}
+                    elapsedTime={elapsedTime}
+                />
+
+                {/* Toggle buttons */}
+                <div className="flex gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn('h-8 w-8', glanceMode && 'bg-primary/10 text-primary')}
+                        onClick={toggleGlanceMode}
+                        aria-label={glanceMode ? 'Disable glance mode' : 'Enable glance mode'}
+                    >
+                        <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn('h-8 w-8', wakeLockActive && 'bg-primary/10 text-primary')}
+                        onClick={toggleWakeLock}
+                        aria-label={wakeLockEnabled ? 'Allow screen sleep' : 'Keep screen awake'}
+                    >
+                        <Smartphone className="w-4 h-4" />
+                    </Button>
                 </div>
-                <div className="w-6" /> {/* Spacer */}
             </div>
 
-            {/* Main Content Stack */}
-            <div className="flex-1 flex flex-col items-center justify-center relative p-6">
-
-                {/* Prev Card (Faded) */}
-                {prevStep && (
-                    <div className="absolute top-16 opacity-30 scale-90 blur-[1px] pointer-events-none transition-all duration-500">
-                        <div className="bg-card border rounded-xl p-4 w-64 text-center">
-                            <p className="text-xs uppercase text-muted-foreground">Previous</p>
-                            <p className="font-semibold truncate">{prevStep.gesture.name}</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Current Card */}
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentStep.gesture.id}
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="w-full max-w-sm bg-card border rounded-3xl shadow-xl overflow-hidden flex flex-col items-center text-center relative z-20 aspect-[3/4]"
-                    >
-                        {/* Image Background (Top) */}
-                        <div className="w-full h-1/2 bg-muted relative">
-                            {currentStep.gesture.media.poster && (
-                                <img
-                                    src={currentStep.gesture.media.poster}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                />
-                            )}
-                            <div className="absolute inset-0 bg-black/20" />
-
-                            {/* Timer Overlay */}
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="text-[5rem] font-bold text-white tabular-nums tracking-tighter drop-shadow-lg">
-                                    {remainingTime}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Content (Bottom) */}
-                        <div className="flex-1 w-full p-6 flex flex-col justify-between bg-card">
-                            <div className="space-y-2">
-                                <h2 className="text-2xl font-bold leading-tight">{currentStep.gesture.name}</h2>
-                                <p className="text-muted-foreground text-lg leading-snug">
-                                    {currentStep.gesture.summary}
-                                </p>
-                            </div>
-
-                            {/* Progress Bar within card */}
-                            <div className="w-full bg-secondary h-2 rounded-full overflow-hidden mt-4">
-                                <motion.div
-                                    className="bg-primary h-full"
-                                    style={{ width: `${progress}%` }}
-                                />
-                            </div>
-                        </div>
-                    </motion.div>
+            {/* Card Stack */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-4 overflow-hidden">
+                {/* Prev */}
+                <AnimatePresence mode="popLayout">
+                    {prevStep && (
+                        <PrevStepCard key={`prev-${currentStepIndex - 1}`} step={prevStep} />
+                    )}
                 </AnimatePresence>
 
-                {/* Next Card (Preview) */}
-                {nextStep && (
-                    <div className="absolute bottom-32 opacity-50 scale-90 translate-y-8 blur-[1px] pointer-events-none transition-all duration-500 max-w-xs w-full">
-                        <div className="bg-card border rounded-xl p-4 w-full text-center shadow-lg">
-                            <p className="text-xs uppercase text-muted-foreground">Up Next</p>
-                            <p className="font-semibold truncate">{nextStep.gesture.name}</p>
-                        </div>
-                    </div>
-                )}
+                {/* Current */}
+                <AnimatePresence mode="wait">
+                    <CurrentStepCard
+                        key={`current-${currentStepIndex}`}
+                        step={currentStep}
+                        remainingTime={remainingTime}
+                        progress={progress}
+                        glanceMode={glanceMode}
+                        playerStatus={status}
+                    />
+                </AnimatePresence>
+
+                {/* Next */}
+                <AnimatePresence mode="popLayout">
+                    {nextStep && (
+                        <NextStepCard key={`next-${currentStepIndex + 1}`} step={nextStep} />
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Screen reader live region for step changes */}
+            <div aria-live="polite" className="sr-only">
+                Step {currentStepIndex + 1} of {steps.length}: {currentStep.gesture.name}.
+                {remainingTime} seconds remaining.
+            </div>
+
+            {/* Media Status */}
+            <div className="flex justify-center pb-2">
+                <MediaStatus gesture={currentStep.gesture} />
             </div>
 
             {/* Controls */}
-            <div className="h-32 pb-8 flex items-center justify-center gap-8 bg-background/80 backdrop-blur-lg border-t z-30">
-                <Button variant="ghost" size="icon" className="h-16 w-16" onClick={prev}>
-                    <SkipBack className="w-8 h-8" />
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={springs.soft}
+                className={cn(
+                    'flex-shrink-0 pb-6 flex items-center justify-center gap-8 bg-background/80 backdrop-blur-lg border-t z-30',
+                    glanceMode ? 'h-36' : 'h-28'
+                )}
+            >
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(glanceMode ? 'h-18 w-18' : 'h-14 w-14')}
+                    onClick={prev}
+                    aria-label="Previous step"
+                >
+                    <SkipBack className={cn(glanceMode ? 'w-9 h-9' : 'w-7 h-7')} />
                 </Button>
 
                 <Button
                     size="icon"
-                    className="h-20 w-20 rounded-full shadow-2xl bg-primary text-primary-foreground hover:scale-105 transition-transform"
+                    className={cn(
+                        'rounded-full shadow-2xl bg-primary text-primary-foreground hover:scale-105 transition-transform',
+                        glanceMode ? 'h-24 w-24' : 'h-20 w-20'
+                    )}
                     onClick={status === 'playing' ? pause : play}
+                    aria-label={status === 'playing' ? 'Pause' : 'Play'}
                 >
                     {status === 'playing' ? (
-                        <Pause className="w-10 h-10 fill-current" />
+                        <Pause className={cn('fill-current', glanceMode ? 'w-12 h-12' : 'w-10 h-10')} />
                     ) : (
-                        <Play className="w-10 h-10 fill-current ml-1" />
+                        <Play className={cn('fill-current ml-1', glanceMode ? 'w-12 h-12' : 'w-10 h-10')} />
                     )}
                 </Button>
 
-                <Button variant="ghost" size="icon" className="h-16 w-16" onClick={next}>
-                    <SkipForward className="w-8 h-8" />
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(glanceMode ? 'h-18 w-18' : 'h-14 w-14')}
+                    onClick={next}
+                    aria-label="Next step"
+                >
+                    <SkipForward className={cn(glanceMode ? 'w-9 h-9' : 'w-7 h-7')} />
                 </Button>
-            </div>
+            </motion.div>
         </div>
     );
 }
-
-// Helper to support variant/size in Button if I didn't verify it
-// My Button component supports className and props.
-// I used "variant" and "size" which are shadcn props.
-// Since I haven't implemented variants in my simple Button, I should fix that or ignore.
-// I will update Button.tsx to support basic variants or just accept className is enough, but to make this code work I should probably add simple variant support or classes.
-// Or just className.

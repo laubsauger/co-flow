@@ -7,6 +7,8 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     currentStepIndex: 0,
     elapsedTime: 0,
     steps: [],
+    glanceMode: false,
+    wakeLockEnabled: true,
 
     loadFlow: (_flowName, steps) => {
         set({
@@ -14,6 +16,15 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
             currentStepIndex: 0,
             elapsedTime: 0,
             status: 'idle'
+        });
+    },
+
+    resumeSession: (steps, stepIndex, elapsedTime) => {
+        set({
+            steps,
+            currentStepIndex: stepIndex,
+            elapsedTime,
+            status: 'paused',
         });
     },
 
@@ -80,4 +91,6 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     },
 
     reset: () => set({ status: 'idle', currentStepIndex: 0, elapsedTime: 0 }),
+    toggleGlanceMode: () => set((s) => ({ glanceMode: !s.glanceMode })),
+    toggleWakeLock: () => set((s) => ({ wakeLockEnabled: !s.wakeLockEnabled })),
 }));

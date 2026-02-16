@@ -1,0 +1,281 @@
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { allFlows, allGestures, gestureMap } from '@/content/generated';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Play, Heart, Clock, Layers, AlertTriangle } from 'lucide-react';
+import { usePlayerStore } from '@/lib/stores/player';
+import { useUserData } from '@/lib/stores/user-data';
+import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
+import { cn } from '@/lib/utils';
+import { springs } from '@/motion/tokens';
+import { useState, useMemo } from 'react';
+import type { PlayerStep } from '@/lib/types/player';
+
+export function FlowDetail() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { loadFlow, play } = usePlayerStore();
+  const { toggleFavoriteFlow, isFlowFavorite } = useUserData();
+  const [showSafetyCheck, setShowSafetyCheck] = useState(false);
+
+  const flow = allFlows.find((f) => f.id === id);
+
+  const { totalDuration, contraindications, equipment, resolvedSteps } =
+    useMemo(() => {
+      if (!flow)
+        return {
+          totalDuration: 0,
+          contraindications: [] as string[],
+          equipment: [] as string[],
+          resolvedSteps: [],
+        };
+
+      let total = 0;
+      const contras = new Set<string>();
+      const equip = new Set<string>();
+      const steps = flow.steps.map((step) => {
+        const gesture = gestureMap.get(step.gestureId);
+        total += step.durationSec;
+        if (gesture) {
+          gesture.contraindications?.forEach((c) => contras.add(c));
+          gesture.equipment?.forEach((e) => equip.add(e));
+        }
+        return { ...step, gesture };
+      });
+
+      return {
+        totalDuration: total,
+        contraindications: Array.from(contras),
+        equipment: Array.from(equip),
+        resolvedSteps: steps,
+      };
+    }, [flow]);
+
+  if (!flow) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen space-y-4">
+        <h1 className="text-2xl font-bold">Flow Not Found</h1>
+        <Link to="/flows" className="text-primary hover:underline">
+          Return to Flows
+        </Link>
+      </div>
+    );
+  }
+
+  const startPlayback = () => {
+    const playerSteps: PlayerStep[] = [];
+    for (const s of flow.steps) {
+      const gesture = allGestures.find((g) => g.id === s.gestureId);
+      if (!gesture) continue;
+      playerSteps.push({ gesture, durationSec: s.durationSec });
+    }
+    if (playerSteps.length > 0) {
+      loadFlow(flow.name, playerSteps);
+      play();
+      navigate('/play');
+    }
+  };
+
+  const handlePlay = () => {
+    if (contraindications.length > 0) {
+      setShowSafetyCheck(true);
+    } else {
+      startPlayback();
+    }
+  };
+
+  const formatDuration = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return s > 0 ? `${m}m ${s}s` : `${m}m`;
+  };
+
+  const isCompiled = !!flow.compiledMedia;
+  const isFavorite = isFlowFavorite(flow.id);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={springs.soft}
+      className="min-h-screen bg-background pb-24"
+    >
+      {/* Header */}
+      <div className="bg-secondary/30 px-4 pt-4 pb-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <Link to="/flows" aria-label="Back to flows">
+              <Button
+                variant="ghost"
+                className="rounded-full w-10 h-10 p-0"
+              >
+                <ArrowLeft className="w-5 h-5" aria-hidden="true" />
+              </Button>
+            </Link>
+            <div className="flex-1" />
+            <Button
+              variant="ghost"
+              className="rounded-full w-10 h-10 p-0"
+              onClick={() => toggleFavoriteFlow(flow.id)}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Heart
+                className={cn(
+                  'w-5 h-5 transition-colors',
+                  isFavorite
+                    ? 'text-red-500 fill-red-500'
+                    : 'text-muted-foreground'
+                )}
+              />
+            </Button>
+          </div>
+
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
+            {flow.name}
+          </h1>
+          <p className="text-muted-foreground leading-relaxed mb-4">
+            {flow.description}
+          </p>
+
+          {/* Meta row */}
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4" />
+              {formatDuration(totalDuration)}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Layers className="w-4 h-4" />
+              {flow.steps.length} steps
+            </span>
+            {isCompiled && (
+              <Badge variant="secondary" className="text-xs">
+                Compiled
+              </Badge>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div className="flex gap-1.5 flex-wrap">
+            {flow.tags.map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs capitalize">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 max-w-2xl mx-auto space-y-6">
+        {/* Contraindications warning — shown before Start */}
+        {contraindications.length > 0 && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-destructive" />
+              <h3 className="font-medium text-sm text-destructive">
+                Contraindications
+              </h3>
+            </div>
+            <ul className="text-sm text-destructive/80 space-y-1">
+              {contraindications.map((c) => (
+                <li key={c}>- {c}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Play button */}
+        <Button
+          className="w-full h-12 text-base shadow-lg"
+          onClick={handlePlay}
+          disabled={flow.steps.length === 0 && !isCompiled}
+        >
+          <Play className="w-5 h-5 mr-2 fill-current" />
+          Start Flow
+        </Button>
+
+        {/* Equipment */}
+        {equipment.length > 0 && (
+          <div>
+            <h3 className="font-medium text-sm text-muted-foreground mb-2">
+              Equipment needed
+            </h3>
+            <div className="flex gap-1.5 flex-wrap">
+              {equipment.map((e) => (
+                <Badge key={e} variant="secondary" className="capitalize">
+                  {e}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step sequence */}
+        {resolvedSteps.length > 0 && (
+          <div>
+            <h3 className="font-medium text-sm text-muted-foreground mb-3">
+              Sequence
+            </h3>
+            <div className="space-y-2">
+              {resolvedSteps.map((step, i) => (
+                <motion.div
+                  key={`${step.gestureId}-${i}`}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ ...springs.soft, delay: i * 0.04 }}
+                  className="flex items-center gap-3 rounded-lg border bg-card p-3"
+                >
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-muted-foreground">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">
+                      {step.title || step.gesture?.name || step.gestureId}
+                    </p>
+                    {step.notes && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {step.notes}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {step.side && step.side !== 'none' && (
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] uppercase px-1.5"
+                      >
+                        {step.side === 'left' ? 'L' : 'R'}
+                      </Badge>
+                    )}
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {formatDuration(step.durationSec)}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Compiled flow info */}
+        {isCompiled && flow.steps.length === 0 && (
+          <div className="rounded-lg bg-secondary/30 p-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              This is a compiled audio session. Press play and relax.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {contraindications.length > 0 && (
+        <SafetyCheckDialog
+          open={showSafetyCheck}
+          onOpenChange={setShowSafetyCheck}
+          contraindications={contraindications}
+          onConfirm={startPlayback}
+        />
+      )}
+    </motion.div>
+  );
+}

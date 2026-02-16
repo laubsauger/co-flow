@@ -2,48 +2,142 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { allGestures } from '@/content/generated';
 import { cn } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { Search, Heart, SlidersHorizontal } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { useUserData } from '@/lib/stores/user-data';
+import Fuse from 'fuse.js';
+import type { Gesture } from '@/lib/types/gesture';
+
+type SortOption = 'default' | 'favorites' | 'alpha' | 'intensity';
+
+const SORT_LABELS: Record<SortOption, string> = {
+    default: 'Default',
+    favorites: 'Favorites first',
+    alpha: 'A-Z',
+    intensity: 'Intensity',
+};
 
 export function GestureList() {
     const [search, setSearch] = useState('');
     const [selectedBodyArea, setSelectedBodyArea] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<SortOption>('default');
+    const [showFilters, setShowFilters] = useState(false);
+    const { isGestureFavorite } = useUserData();
 
     const bodyAreas = useMemo(() => {
         const areas = new Set<string>();
-        // @ts-ignore
-        allGestures.forEach(g => g.bodyAreas.forEach(a => areas.add(a)));
+        allGestures.forEach(g => g.bodyAreas.forEach((a: string) => areas.add(a)));
         return Array.from(areas).sort();
     }, []);
 
+    const fuse = useMemo(
+        () =>
+            new Fuse(allGestures, {
+                keys: [
+                    { name: 'name', weight: 3 },
+                    { name: 'summary', weight: 2 },
+                    { name: 'tags', weight: 1.5 },
+                    { name: 'bodyAreas', weight: 1 },
+                    { name: 'description', weight: 0.5 },
+                ],
+                threshold: 0.4,
+                includeScore: true,
+            }),
+        []
+    );
+
     const filteredGestures = useMemo(() => {
-        return allGestures.filter(g => {
-            const matchesSearch = g.name.toLowerCase().includes(search.toLowerCase()) ||
-                g.summary.toLowerCase().includes(search.toLowerCase());
-            const matchesArea = selectedBodyArea ? g.bodyAreas.includes(selectedBodyArea) : true;
-            return matchesSearch && matchesArea;
-        });
-    }, [search, selectedBodyArea]);
+        let results: Gesture[] = search.trim()
+            ? fuse.search(search).map((r) => r.item)
+            : [...allGestures];
+
+        if (selectedBodyArea) {
+            results = results.filter((g) => g.bodyAreas.includes(selectedBodyArea));
+        }
+
+        // Sort
+        switch (sortBy) {
+            case 'favorites':
+                results.sort((a, b) => {
+                    const aFav = isGestureFavorite(a.id) ? 0 : 1;
+                    const bFav = isGestureFavorite(b.id) ? 0 : 1;
+                    return aFav - bFav;
+                });
+                break;
+            case 'alpha':
+                results.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'intensity':
+                results.sort((a, b) => b.intensity - a.intensity);
+                break;
+        }
+
+        return results;
+    }, [search, selectedBodyArea, sortBy, fuse, isGestureFavorite]);
 
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
             <header className="mb-6 space-y-4">
                 <h1 className="text-3xl font-bold tracking-tight text-primary">Library</h1>
 
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                        type="text"
-                        placeholder="Search gestures..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    />
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <input
+                            type="text"
+                            placeholder="Search gestures..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                    </div>
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        aria-label={showFilters ? 'Hide sort options' : 'Show sort options'}
+                        aria-expanded={showFilters}
+                        className={cn(
+                            "h-10 w-10 rounded-md border flex items-center justify-center transition-colors",
+                            showFilters
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background border-input text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <SlidersHorizontal className="w-4 h-4" aria-hidden="true" />
+                    </button>
                 </div>
 
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {/* Sort options */}
+                {showFilters && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        className="space-y-2"
+                    >
+                        <label className="text-xs font-medium text-muted-foreground">Sort by</label>
+                        <div className="flex gap-1.5 flex-wrap">
+                            {(Object.keys(SORT_LABELS) as SortOption[]).map(option => (
+                                <button
+                                    key={option}
+                                    onClick={() => setSortBy(option)}
+                                    className={cn(
+                                        "px-2.5 py-1 rounded-md text-xs font-medium transition-colors",
+                                        sortBy === option
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                    )}
+                                >
+                                    {SORT_LABELS[option]}
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Body area filters */}
+                <div role="group" aria-label="Filter by body area" className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                     <button
                         onClick={() => setSelectedBodyArea(null)}
+                        aria-pressed={selectedBodyArea === null}
                         className={cn(
                             "px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap",
                             selectedBodyArea === null
@@ -57,6 +151,7 @@ export function GestureList() {
                         <button
                             key={area}
                             onClick={() => setSelectedBodyArea(area)}
+                            aria-pressed={selectedBodyArea === area}
                             className={cn(
                                 "px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap capitalize",
                                 selectedBodyArea === area
@@ -90,8 +185,15 @@ export function GestureList() {
                                         No Image
                                     </div>
                                 )}
-                                <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                                    {gesture.durationDefaults.defaultSec}s
+                                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                    {isGestureFavorite(gesture.id) && (
+                                        <div className="bg-black/50 backdrop-blur-sm rounded-full p-1">
+                                            <Heart className="w-3 h-3 text-red-400 fill-red-400" />
+                                        </div>
+                                    )}
+                                    <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                                        {gesture.durationDefaults.defaultSec}s
+                                    </div>
                                 </div>
                             </div>
                             <div className="p-4">

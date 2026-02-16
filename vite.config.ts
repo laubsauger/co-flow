@@ -5,6 +5,7 @@ import path from "path"
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/co-flow/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

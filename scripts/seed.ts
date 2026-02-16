@@ -8,8 +8,8 @@ const GESTURES_DIR = path.resolve(__dirname, '../src/content/gestures');
 function slugify(text: string) {
     return text.toString().toLowerCase()
         .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-')
+        .replace(/[^\w-]+/g, '')
+        .replace(/--+/g, '-')
         .replace(/^-+/, '')
         .replace(/-+$/, '');
 }
@@ -41,7 +41,9 @@ async function main() {
             await fs.access(targetDir);
             console.log(`Skipping ${slug} (already exists)`);
             continue;
-        } catch { }
+        } catch {
+            // Directory doesn't exist yet, will create
+        }
 
         const gesture = {
             id: slug,

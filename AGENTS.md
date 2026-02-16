@@ -71,6 +71,9 @@ src/
 ```
 
 ## 6. Active Context (Current Status)
-- **Phase**: Milestone 2: Guided Player Polish
-- **Focus**: Improving the Player UI with specific cards, progress overview, and motion.
-- **Next Up**: Implementing `ProgressOverview` and Motion details in `PlayerView`.
+- **Phase**: Milestone 1 complete ✅, Milestone 2 in progress
+- **M1 Delivered**: Repo scaffold, 12 gestures + 4 flows, gesture library with search/filter/favorites, flow library, player MVP with Prev/Now/Next + controls, motion tokens/primitives, app shell with bottom nav, shadcn properly initialized
+- **Two Agents**: Agent 1 owns player (`src/features/player/`), stores (`src/lib/stores/player.ts`), content pipeline (`scripts/`, `src/content/`), types (`src/lib/types/`). Agent 2 owns app shell (`src/app/`), motion (`src/motion/`), UI components (`src/components/ui/`), user data store (`src/lib/stores/user-data.ts`), gestures UI (`src/features/gestures/`)
+- **M2 Focus — Agent 1**: Player card components (PrevStepCard, CurrentStepCard, NextStepCard), ProgressOverview, Glance Mode, Wake Lock
+- **M2 Focus — Agent 2**: FlowDetail view, flow favorites UI
+- **Unblocked for early start**: M3.1 (Audio Chaining), M3.3 (State Persistence), M4.1 (Flow Builder data layer)

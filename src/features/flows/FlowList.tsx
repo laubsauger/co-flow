@@ -1,33 +1,52 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { allFlows, allGestures } from '@/content/generated';
-
-import { Play } from 'lucide-react';
+import { allFlows, allGestures, gestureMap } from '@/content/generated';
+import { Play, Heart, Clock, Layers, Search, Pencil } from 'lucide-react';
 import { usePlayerStore } from '@/lib/stores/player';
+import { useUserData } from '@/lib/stores/user-data';
+import { useUserFlows } from '@/lib/stores/user-flows';
+import { springs } from '@/motion/tokens';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { useState, useMemo } from 'react';
+import Fuse from 'fuse.js';
 import type { PlayerStep } from '@/lib/types/player';
+
+const fuseInstance = new Fuse(allFlows, {
+    keys: [
+        { name: 'name', weight: 3 },
+        { name: 'description', weight: 2 },
+        { name: 'tags', weight: 1.5 },
+    ],
+    threshold: 0.4,
+});
+
+type Tab = 'curated' | 'mine';
 
 export function FlowList() {
     const navigate = useNavigate();
     const { loadFlow, play } = usePlayerStore();
+    const { isFlowFavorite } = useUserData();
+    const { flows: userFlows } = useUserFlows();
+    const [search, setSearch] = useState('');
+    const [tab, setTab] = useState<Tab>('curated');
 
-    const handlePlayFlow = (flowId: string) => {
-        const flow = allFlows.find(f => f.id === flowId);
-        if (!flow) {
-            console.error(`Flow ${flowId} not found`);
-            return;
-        }
+    const handlePlayFlow = (e: React.MouseEvent, flowId: string, isUserFlow: boolean) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const flow = isUserFlow
+            ? userFlows.find(f => f.id === flowId)
+            : allFlows.find(f => f.id === flowId);
+        if (!flow) return;
 
         const steps: PlayerStep[] = [];
         for (const s of flow.steps) {
-            const gesture = allGestures.find(g => g.id === s.gestureId);
-            if (!gesture) {
-                console.warn(`Gesture ${s.gestureId} skipped in flow ${flowId}`);
-                continue;
-            }
-            steps.push({
-                gesture,
-                durationSec: s.durationSec,
-            });
+            const gesture = isUserFlow
+                ? gestureMap.get(s.gestureId)
+                : allGestures.find(g => g.id === s.gestureId);
+            if (!gesture) continue;
+            steps.push({ gesture, durationSec: s.durationSec });
         }
 
         if (steps.length > 0) {
@@ -37,52 +56,200 @@ export function FlowList() {
         }
     };
 
+    const formatDuration = (steps: { durationSec: number }[]) => {
+        const total = steps.reduce((sum, s) => sum + s.durationSec, 0);
+        const m = Math.floor(total / 60);
+        return `${m}m`;
+    };
+
+    const filteredCurated = useMemo(() => {
+        if (!search.trim()) return allFlows;
+        return fuseInstance.search(search).map((r) => r.item);
+    }, [search]);
+
+    const filteredUserFlows = useMemo(() => {
+        if (!search.trim()) return userFlows;
+        const q = search.toLowerCase();
+        return userFlows.filter(
+            (f) =>
+                f.name.toLowerCase().includes(q) ||
+                f.description.toLowerCase().includes(q)
+        );
+    }, [search, userFlows]);
+
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
-            <header className="mb-6 space-y-4">
+            <header className="mb-6 space-y-3">
                 <h1 className="text-3xl font-bold tracking-tight text-primary">Flows</h1>
-                <p className="text-muted-foreground">Curated sessions for you.</p>
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Search flows..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9"
+                    />
+                </div>
+
+                {/* Tabs */}
+                <div role="tablist" aria-label="Flow categories" className="flex gap-1 bg-secondary/50 rounded-lg p-1">
+                    <button
+                        role="tab"
+                        aria-selected={tab === 'curated'}
+                        onClick={() => setTab('curated')}
+                        className={cn(
+                            'flex-1 text-sm font-medium py-1.5 rounded-md transition-colors',
+                            tab === 'curated'
+                                ? 'bg-background text-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                        )}
+                    >
+                        Curated
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={tab === 'mine'}
+                        onClick={() => setTab('mine')}
+                        className={cn(
+                            'flex-1 text-sm font-medium py-1.5 rounded-md transition-colors',
+                            tab === 'mine'
+                                ? 'bg-background text-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                        )}
+                    >
+                        My Flows{userFlows.length > 0 && ` (${userFlows.length})`}
+                    </button>
+                </div>
             </header>
 
-            <div className="grid grid-cols-1 gap-4">
-                {allFlows.map(flow => (
-                    <motion.div
-                        key={flow.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden flex"
-                    >
-                        <div className="w-24 bg-secondary flex-shrink-0 flex items-center justify-center">
-                            <span className="text-2xl">🌊</span>
-                        </div>
-                        <div className="p-4 flex-1">
-                            <h3 className="font-semibold leading-none tracking-tight mb-1">
-                                {flow.name}
-                            </h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                                {flow.description}
-                            </p>
+            {tab === 'curated' && (
+                <div className="grid grid-cols-1 gap-3">
+                    {filteredCurated.map((flow, i) => (
+                        <Link key={flow.id} to={`/flows/${flow.id}`}>
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ ...springs.soft, delay: i * 0.05 }}
+                                className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                            >
+                                <div className="p-4">
+                                    <div className="flex items-start justify-between mb-1">
+                                        <h3 className="font-semibold leading-tight">
+                                            {flow.name}
+                                        </h3>
+                                        <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+                                            {isFlowFavorite(flow.id) && (
+                                                <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" />
+                                            )}
+                                            <button
+                                                onClick={(e) => handlePlayFlow(e, flow.id, false)}
+                                                aria-label={`Play ${flow.name}`}
+                                                className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center hover:scale-105 transition-transform"
+                                            >
+                                                <Play className="w-4 h-4 fill-current ml-0.5" />
+                                            </button>
+                                        </div>
+                                    </div>
 
-                            <div className="flex items-center justify-between">
-                                <div className="flex gap-1">
-                                    {flow.tags.slice(0, 3).map(tag => (
-                                        <span key={tag} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground">
-                                            {tag}
-                                        </span>
-                                    ))}
+                                    <p className="text-sm text-muted-foreground line-clamp-1 mb-3">
+                                        {flow.description}
+                                    </p>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                {formatDuration(flow.steps)}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Layers className="w-3.5 h-3.5" />
+                                                {flow.steps.length} steps
+                                            </span>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            {flow.tags.slice(0, 2).map(tag => (
+                                                <span key={tag} className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-secondary-foreground">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
+                            </motion.div>
+                        </Link>
+                    ))}
+                </div>
+            )}
 
-                                <button
-                                    onClick={() => handlePlayFlow(flow.id)}
-                                    className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center hover:scale-105 transition-transform"
-                                >
-                                    <Play className="w-4 h-4 fill-current ml-0.5" />
-                                </button>
-                            </div>
+            {tab === 'mine' && (
+                <div className="grid grid-cols-1 gap-3">
+                    {filteredUserFlows.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground">
+                            <p className="text-sm mb-2">No custom flows yet</p>
+                            <Link
+                                to="/builder"
+                                className="text-primary text-sm hover:underline"
+                            >
+                                Create one in the Builder
+                            </Link>
                         </div>
-                    </motion.div>
-                ))}
-            </div>
+                    ) : (
+                        filteredUserFlows.map((flow, i) => (
+                            <Link key={flow.id} to={`/builder/${flow.id}`}>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ ...springs.soft, delay: i * 0.05 }}
+                                    className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                                >
+                                    <div className="p-4">
+                                        <div className="flex items-start justify-between mb-1">
+                                            <h3 className="font-semibold leading-tight">
+                                                {flow.name}
+                                            </h3>
+                                            <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+                                                <Link
+                                                    to={`/builder/${flow.id}`}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="text-muted-foreground hover:text-foreground"
+                                                >
+                                                    <Pencil className="w-3.5 h-3.5" />
+                                                </Link>
+                                                {flow.steps.length > 0 && (
+                                                    <button
+                                                        onClick={(e) => handlePlayFlow(e, flow.id, true)}
+                                                        aria-label={`Play ${flow.name}`}
+                                                        className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center hover:scale-105 transition-transform"
+                                                    >
+                                                        <Play className="w-4 h-4 fill-current ml-0.5" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {flow.description && (
+                                            <p className="text-sm text-muted-foreground line-clamp-1 mb-3">
+                                                {flow.description}
+                                            </p>
+                                        )}
+
+                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                {formatDuration(flow.steps)}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Layers className="w-3.5 h-3.5" />
+                                                {flow.steps.length} steps
+                                            </span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </Link>
+                        ))
+                    )}
+                </div>
+            )}
         </div>
     );
 }

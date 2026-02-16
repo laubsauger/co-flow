@@ -1,17 +1,29 @@
-# Milestone 2: Guided Player Polish
+# Milestone 2: Guided Player Polish + Flow Library
 
-## 2.1 UI/UX Refinement
-- [ ] Implement "Glance Mode" typography scaling.
-- [ ] Build `PrevStepCard`, `CurrentStepCard`, `NextStepCard` components.
-- [ ] Add `ProgressOverview` component (segmented bar).
-- [ ] Add `MediaStatus` indicators (audio playing, video on/off).
+> **Status: COMPLETE**
 
-## 2.2 Controls & Logic
-- [x] Hook up Skip/Back/Repeat actions to Zustand store. (Agent 1 done this in MVP)
-- [ ] Implement `Keep Screen Awake` toggle (using Screen Wake Lock API).
-- [ ] Integrate Framer Motion for card transitions (enter/exit animations).
+---
 
-## 2.3 Feature: Flows
-- [x] Create seed flows.
-- [x] Create FlowList UI.
-- [x] Connect FlowList to Player logic.
+## 2.1 Player Card Components (Agent 1)
+
+- [x] **2.1.1** `PrevStepCard.tsx`: condensed card with completed indicator
+- [x] **2.1.2** `CurrentStepCard.tsx`: massive countdown, gesture name, summary, side indicator, media status
+- [x] **2.1.3** `NextStepCard.tsx`: upcoming gesture name + duration preview
+- [x] **2.1.4** `ProgressOverview.tsx`: segmented progress bar, step index, remaining time
+- [x] **2.1.5** Refactored `PlayerView.tsx` to use card components
+- [x] **2.1.6** Framer Motion layout transitions for card stack
+
+## 2.2 Glance Mode & Controls (Agent 1)
+
+- [x] **2.2.1** Skip/Back/Repeat controls wired to Zustand store
+- [x] **2.2.2** Glance Mode toggle with scaled typography
+- [x] **2.2.3** Keep Screen Awake toggle (Screen Wake Lock API)
+- [x] **2.2.4** MediaStatus indicators on CurrentStepCard
+
+## 2.3 Flow Library Polish (Agent 2)
+
+- [x] **2.3.1** `FlowList.tsx`: browsable list with duration, step count, tags, play button, favorites
+- [x] **2.3.2** Flow → Player integration
+- [x] **2.3.3** `FlowDetail.tsx`: step sequence, total duration, equipment, aggregated contraindications, "Start Flow" button
+- [x] **2.3.4** Route `/flows/:id` wired in App.tsx
+- [x] **2.3.5** Favorites toggle for flows in FlowDetail + indicator on FlowList cards

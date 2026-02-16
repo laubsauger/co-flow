@@ -1,14 +1,20 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Play, Timer, Heart } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ArrowLeft, Play, Timer, Heart, AlertTriangle } from 'lucide-react';
 import { usePlayerStore } from '@/lib/stores/player';
+import { useUserData } from '@/lib/stores/user-data';
+import { SafetyCheckDialog } from '@/components/SafetyCheckDialog';
 
 export function GestureDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { loadGesture, play } = usePlayerStore();
+    const { toggleFavoriteGesture, isGestureFavorite } = useUserData();
+    const [showSafetyCheck, setShowSafetyCheck] = useState(false);
 
     const gesture = allGestures.find(g => g.id === id);
 
@@ -21,10 +27,20 @@ export function GestureDetail() {
         );
     }
 
-    const handlePlay = () => {
+    const hasContraindications = gesture.contraindications && gesture.contraindications.length > 0;
+
+    const startPlayback = () => {
         loadGesture(gesture.id);
         play();
         navigate('/play');
+    };
+
+    const handlePlay = () => {
+        if (hasContraindications) {
+            setShowSafetyCheck(true);
+        } else {
+            startPlayback();
+        }
     };
 
     return (
@@ -49,9 +65,9 @@ export function GestureDetail() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
 
                 <div className="absolute top-4 left-4 z-10">
-                    <Link to="/">
+                    <Link to="/" aria-label="Back to library">
                         <Button className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm" variant="ghost">
-                            <ArrowLeft className="w-5 h-5" />
+                            <ArrowLeft className="w-5 h-5" aria-hidden="true" />
                         </Button>
                     </Link>
                 </div>
@@ -83,6 +99,23 @@ export function GestureDetail() {
 
             {/* Content */}
             <div className="p-6 max-w-2xl mx-auto space-y-8">
+                {/* Contraindication Warning Banner */}
+                {gesture.contraindications && gesture.contraindications.length > 0 && (
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <AlertTriangle className="w-4 h-4 text-destructive" />
+                            <h3 className="font-medium text-sm text-destructive">
+                                Contraindications
+                            </h3>
+                        </div>
+                        <ul className="text-sm text-destructive/80 space-y-1">
+                            {gesture.contraindications.map(c => (
+                                <li key={c}>- {c}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
                 {/* Play Action */}
                 <div className="flex gap-4">
                     <Button
@@ -92,8 +125,20 @@ export function GestureDetail() {
                         <Play className="w-5 h-5 mr-2 fill-current" />
                         Try Gesture
                     </Button>
-                    <Button variant="secondary" className="w-12 h-12 px-0">
-                        <Heart className="w-6 h-6 text-muted-foreground hover:text-red-500 hover:fill-red-500 transition-colors" />
+                    <Button
+                        variant="secondary"
+                        className="w-12 h-12 px-0"
+                        onClick={() => toggleFavoriteGesture(gesture.id)}
+                        aria-label={isGestureFavorite(gesture.id) ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                        <Heart
+                            className={cn(
+                                'w-6 h-6 transition-colors',
+                                isGestureFavorite(gesture.id)
+                                    ? 'text-red-500 fill-red-500'
+                                    : 'text-muted-foreground hover:text-red-500'
+                            )}
+                        />
                     </Button>
                 </div>
 
@@ -111,27 +156,24 @@ export function GestureDetail() {
                 </div>
 
                 {/* Technical Details */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <h3 className="font-medium text-muted-foreground mb-1">Body Areas</h3>
-                        <div className="flex flex-wrap gap-1">
-                            {gesture.bodyAreas.map(area => (
-                                <span key={area} className="capitalize">{area}</span>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <h3 className="font-medium text-muted-foreground mb-1">Contraindications</h3>
-                        {gesture.contraindications && gesture.contraindications.length > 0 ? (
-                            <ul className="list-disc list-inside text-destructive">
-                                {gesture.contraindications.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                        ) : (
-                            <p>None specified</p>
-                        )}
+                <div className="text-sm">
+                    <h3 className="font-medium text-muted-foreground mb-1">Body Areas</h3>
+                    <div className="flex flex-wrap gap-1">
+                        {gesture.bodyAreas.map(area => (
+                            <span key={area} className="capitalize">{area}</span>
+                        ))}
                     </div>
                 </div>
             </div>
+
+            {hasContraindications && (
+                <SafetyCheckDialog
+                    open={showSafetyCheck}
+                    onOpenChange={setShowSafetyCheck}
+                    contraindications={gesture.contraindications!}
+                    onConfirm={startPlayback}
+                />
+            )}
         </div>
     );
 }
