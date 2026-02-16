@@ -6,6 +6,9 @@ import { Plus, ChevronRight, Clock, Layers, Trash2 } from 'lucide-react';
 import { springs } from '@/motion/tokens';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { getFlowGradient } from '@/lib/body-area-colors';
+import { gestureMap } from '@/content/generated';
+import { BrandHeader } from '@/components/BrandHeader';
 
 export function BuilderHome() {
   const navigate = useNavigate();
@@ -30,6 +33,7 @@ export function BuilderHome() {
   return (
     <div className="p-4 max-w-2xl mx-auto pb-20">
       <header className="mb-6 space-y-1">
+        <BrandHeader />
         <h1 className="text-3xl font-bold tracking-tight text-primary">
           Builder
         </h1>
@@ -101,15 +105,25 @@ export function BuilderHome() {
                 onClick={() => navigate(`/builder/${flow.id}`)}
                 className="w-full flex items-center gap-3 p-4 text-left"
               >
+                {/* Gradient Thumbnail */}
+                <div
+                  className="w-12 h-12 rounded-full flex-shrink-0 shadow-inner"
+                  style={{
+                    background: getFlowGradient(
+                      flow.steps.flatMap(s => gestureMap.get(s.gestureId)?.bodyAreas || [])
+                    )
+                  }}
+                />
+
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm truncate">{flow.name}</p>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                     <span className="flex items-center gap-1">
-                      <Layers className="w-3 h-3" />
+                      <Layers className="w-3.5 h-3.5" />
                       {flow.steps.length} steps
                     </span>
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
+                      <Clock className="w-3.5 h-3.5" />
                       {formatDuration(flow.steps)}
                     </span>
                   </div>

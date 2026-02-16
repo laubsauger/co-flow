@@ -15,6 +15,7 @@ import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { PlayerStep } from '@/lib/types/player';
 import type { Gesture } from '@/lib/types/gesture';
+import { BrandHeader } from '@/components/BrandHeader';
 
 const fuseInstance = new Fuse(allFlows, {
     keys: [
@@ -85,6 +86,7 @@ export function FlowList() {
         <div className="p-4 max-w-2xl mx-auto pb-20">
             <header className="mb-6 space-y-3">
                 <div>
+                    <BrandHeader />
                     <h1 className="text-3xl font-bold tracking-tight text-primary">Flows</h1>
                     <p className="text-sm text-muted-foreground mt-1">Guided sequences crafted with care.</p>
                 </div>

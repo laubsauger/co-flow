@@ -10,6 +10,7 @@ import { useUserData } from '@/lib/stores/user-data';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import Fuse from 'fuse.js';
 import type { Gesture } from '@/lib/types/gesture';
+import { BrandHeader } from '@/components/BrandHeader';
 
 type SortOption = 'default' | 'favorites' | 'alpha' | 'intensity';
 
@@ -78,10 +79,12 @@ export function GestureList() {
         return results;
     }, [search, selectedBodyArea, sortBy, fuse, isGestureFavorite]);
 
+    // ... (lines 82)
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
             <header className="mb-6 space-y-4">
                 <div>
+                    <BrandHeader />
                     <h1 className="text-3xl font-bold tracking-tight text-primary">Explore</h1>
                     <p className="text-sm text-muted-foreground mt-1">Find the perfect gesture for every moment.</p>
                 </div>
