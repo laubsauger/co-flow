@@ -128,6 +128,7 @@ export function FlowEditor() {
     reorderingRef.current = true;
     setItems(newOrder);
     // Strip _key before persisting to store
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const stripped: FlowStep[] = newOrder.map(({ _key, ...step }) => step);
     useUserFlows.setState((state) => ({
       flows: state.flows.map((f) =>
