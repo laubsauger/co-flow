@@ -142,7 +142,8 @@ export function FlowList() {
                                 {(() => {
                                     const firstGesture = flow.steps[0] ? gestureMap.get(flow.steps[0].gestureId) as Gesture | undefined : undefined;
                                     const poster = flow.poster || firstGesture?.media.poster;
-                                    const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
+                                    // Only tint if we are relying on a gesture image (fallback). Custom flow posters should be untinted.
+                                    const tintColor = (!flow.poster && firstGesture) ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
                                     return (
                                         <div
                                             className="aspect-[2/1] relative overflow-hidden"
