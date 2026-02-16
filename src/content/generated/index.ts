@@ -209,8 +209,8 @@ const gesture_22 = {
             poster: gesture_22_poster,
         }
     };
-import gesture_23_json from '../gestures/final-touch/gesture.json';
-import gesture_23_poster from '../gestures/final-touch/poster.png';
+import gesture_23_json from '../gestures/eyebrow-bladder-points/gesture.json';
+import gesture_23_poster from '../gestures/eyebrow-bladder-points/poster.png';
 const gesture_23 = {
         ...gesture_23_json,
         media: {
@@ -218,8 +218,8 @@ const gesture_23 = {
             poster: gesture_23_poster,
         }
     };
-import gesture_24_json from '../gestures/eyebrow-bladder-points/gesture.json';
-import gesture_24_poster from '../gestures/eyebrow-bladder-points/poster.png';
+import gesture_24_json from '../gestures/final-touch/gesture.json';
+import gesture_24_poster from '../gestures/final-touch/poster.png';
 const gesture_24 = {
         ...gesture_24_json,
         media: {

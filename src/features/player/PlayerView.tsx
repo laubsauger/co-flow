@@ -118,49 +118,67 @@ export function PlayerView() {
             )}
         >
             {/* Top Bar */}
-            <div className="flex-shrink-0 px-4 pt-4 pb-2 flex justify-between items-center z-10">
-                <Button variant="ghost" size="icon" onClick={() => navigate('/')} aria-label="Close player">
-                    <X className="w-6 h-6" />
-                </Button>
+            <div className="flex-shrink-0 px-4 pt-4 pb-2 z-10 space-y-2">
+                {/* Row 1: close, step counter, time, toggles */}
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={() => navigate('/')} aria-label="Close player">
+                        <X className="w-5 h-5" />
+                    </Button>
 
+                    <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                        {currentStepIndex + 1} / {steps.length}
+                    </span>
+
+                    <span className="flex-1" />
+
+                    <ProgressOverview
+                        steps={steps}
+                        currentStepIndex={currentStepIndex}
+                        elapsedTime={elapsedTime}
+                        timeOnly
+                    />
+
+                    {/* Toggle buttons */}
+                    <div className="flex gap-1 flex-shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn('h-8 w-8', glanceMode && 'bg-primary/10 text-primary')}
+                            onClick={toggleGlanceMode}
+                            aria-label={glanceMode ? 'Disable glance mode' : 'Enable glance mode'}
+                        >
+                            <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn('h-8 w-8', wakeLockActive && 'bg-primary/10 text-primary')}
+                            onClick={toggleWakeLock}
+                            aria-label={wakeLockEnabled ? 'Allow screen sleep' : 'Keep screen awake'}
+                        >
+                            <Smartphone className="w-4 h-4" />
+                        </Button>
+                        {currentStep?.gesture.media.captions && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className={cn('h-8 w-8', captionsEnabled && 'bg-primary/10 text-primary')}
+                                onClick={() => setCaptionsEnabled((v) => !v)}
+                                aria-label={captionsEnabled ? 'Hide captions' : 'Show captions'}
+                            >
+                                <Captions className="w-4 h-4" />
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Row 2: segmented progress bar */}
                 <ProgressOverview
                     steps={steps}
                     currentStepIndex={currentStepIndex}
                     elapsedTime={elapsedTime}
+                    barOnly
                 />
-
-                {/* Toggle buttons */}
-                <div className="flex gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn('h-8 w-8', glanceMode && 'bg-primary/10 text-primary')}
-                        onClick={toggleGlanceMode}
-                        aria-label={glanceMode ? 'Disable glance mode' : 'Enable glance mode'}
-                    >
-                        <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn('h-8 w-8', wakeLockActive && 'bg-primary/10 text-primary')}
-                        onClick={toggleWakeLock}
-                        aria-label={wakeLockEnabled ? 'Allow screen sleep' : 'Keep screen awake'}
-                    >
-                        <Smartphone className="w-4 h-4" />
-                    </Button>
-                    {currentStep?.gesture.media.captions && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn('h-8 w-8', captionsEnabled && 'bg-primary/10 text-primary')}
-                            onClick={() => setCaptionsEnabled((v) => !v)}
-                            aria-label={captionsEnabled ? 'Hide captions' : 'Show captions'}
-                        >
-                            <Captions className="w-4 h-4" />
-                        </Button>
-                    )}
-                </div>
             </div>
 
             {/* Card Stack */}
