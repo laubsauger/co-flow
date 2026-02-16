@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Reorder, motion } from 'framer-motion';
+import { Reorder, motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useUserFlows } from '@/lib/stores/user-flows';
 import { gestureMap } from '@/content/generated';
@@ -7,6 +7,7 @@ import { usePlayerStore } from '@/lib/stores/player';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
 import {
   ArrowLeft,
   Plus,
@@ -253,6 +254,7 @@ export function FlowEditor() {
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleAddGesture}
+        currentStepGestureIds={flow.steps.map(s => s.gestureId)}
       />
     </div>
   );
@@ -308,84 +310,88 @@ function StepItem({
         </div>
       </div>
 
-      {expanded && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={springs.soft}
-          className="border-t px-3 py-3 space-y-3"
-        >
-          {/* Duration */}
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-muted-foreground w-16">Duration</label>
-            <input
-              type="range"
-              min={gesture?.durationDefaults.minSec ?? 10}
-              max={gesture?.durationDefaults.maxSec ?? 300}
-              value={step.durationSec}
-              onChange={(e) =>
-                onUpdate({ durationSec: parseInt(e.target.value, 10) })
-              }
-              className="flex-1"
-            />
-            <span className="text-xs tabular-nums w-10 text-right">
-              {step.durationSec}s
-            </span>
-          </div>
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="border-t px-3 py-3 space-y-3">
+              {/* Duration */}
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-muted-foreground w-16">Duration</label>
+                <Slider
+                  min={gesture?.durationDefaults.minSec ?? 10}
+                  max={gesture?.durationDefaults.maxSec ?? 300}
+                  step={5}
+                  value={[step.durationSec]}
+                  onValueChange={([val]) =>
+                    onUpdate({ durationSec: val })
+                  }
+                  className="flex-1"
+                />
+                <span className="text-xs tabular-nums w-10 text-right">
+                  {step.durationSec}s
+                </span>
+              </div>
 
-          {/* Side */}
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-muted-foreground w-16">Side</label>
-            <div className="flex gap-1">
-              {(['none', 'left', 'right'] as const).map((side) => (
+              {/* Side */}
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-muted-foreground w-16">Side</label>
+                <div className="flex gap-1">
+                  {(['none', 'left', 'right'] as const).map((side) => (
+                    <Button
+                      key={side}
+                      variant={step.side === side || (!step.side && side === 'none') ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-7 text-xs px-3"
+                      onClick={() => onUpdate({ side })}
+                    >
+                      {side === 'none' ? 'Both' : side === 'left' ? 'Left' : 'Right'}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div className="flex items-start gap-3">
+                <label className="text-xs text-muted-foreground w-16 pt-2">Notes</label>
+                <Input
+                  value={step.notes ?? ''}
+                  onChange={(e) => onUpdate({ notes: e.target.value })}
+                  placeholder="Optional notes..."
+                  className="flex-1 h-8 text-xs"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-1">
                 <Button
-                  key={side}
-                  variant={step.side === side || (!step.side && side === 'none') ? 'default' : 'outline'}
+                  variant="ghost"
                   size="sm"
-                  className="h-7 text-xs px-3"
-                  onClick={() => onUpdate({ side })}
+                  className="h-7 text-xs"
+                  onClick={onDuplicate}
                 >
-                  {side === 'none' ? 'Both' : side === 'left' ? 'Left' : 'Right'}
+                  <Copy className="w-3 h-3 mr-1" />
+                  Duplicate
                 </Button>
-              ))}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs text-destructive hover:text-destructive"
+                  onClick={onRemove}
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  Remove
+                </Button>
+              </div>
             </div>
-          </div>
-
-          {/* Notes */}
-          <div className="flex items-start gap-3">
-            <label className="text-xs text-muted-foreground w-16 pt-2">Notes</label>
-            <Input
-              value={step.notes ?? ''}
-              onChange={(e) => onUpdate({ notes: e.target.value })}
-              placeholder="Optional notes..."
-              className="flex-1 h-8 text-xs"
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2 pt-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-xs"
-              onClick={onDuplicate}
-            >
-              <Copy className="w-3 h-3 mr-1" />
-              Duplicate
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-xs text-destructive hover:text-destructive"
-              onClick={onRemove}
-            >
-              <Trash2 className="w-3 h-3 mr-1" />
-              Remove
-            </Button>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Reorder.Item>
   );
 }

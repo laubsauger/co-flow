@@ -41,16 +41,16 @@ function AnimatedRoutes() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route element={<AppLayout />}>
-            <Route path="/" element={<GestureList />} />
+            <Route path="/" element={<FlowList />} />
+            <Route path="/gestures" element={<GestureList />} />
             <Route path="/gestures/:id" element={<GestureDetail />} />
-            <Route path="/flows" element={<FlowList />} />
             <Route path="/flows/:id" element={<FlowDetail />} />
             <Route path="/builder" element={<BuilderHome />} />
             <Route path="/builder/:id" element={<FlowEditor />} />
           </Route>
           {/* Player is full-screen, outside the layout (no bottom nav) */}
           <Route path="/play" element={<PlayerView />} />
-          <Route path="*" element={<GestureList />} />
+          <Route path="*" element={<FlowList />} />
         </Routes>
       </AnimatePresence>
     </Suspense>

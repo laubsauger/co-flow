@@ -224,13 +224,14 @@ export function FlowList() {
                                             <h3 className="font-semibold leading-tight">
                                                 {flow.name}
                                             </h3>
-                                            <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+                                            <div className="flex items-center gap-2.5 flex-shrink-0 ml-3">
                                                 <Link
                                                     to={`/builder/${flow.id}`}
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="text-muted-foreground hover:text-foreground"
+                                                    aria-label={`Edit ${flow.name}`}
+                                                    className="text-muted-foreground hover:text-foreground rounded-full w-8 h-8 flex items-center justify-center hover:bg-secondary transition-colors"
                                                 >
-                                                    <Pencil className="w-3.5 h-3.5" />
+                                                    <Pencil className="w-4 h-4" />
                                                 </Link>
                                                 {flow.steps.length > 0 && (
                                                     <button

@@ -58,7 +58,7 @@ export function FlowDetail() {
     return (
       <div className="flex flex-col items-center justify-center h-screen space-y-4">
         <h1 className="text-2xl font-bold">Flow Not Found</h1>
-        <Link to="/flows" className="text-primary hover:underline">
+        <Link to="/" className="text-primary hover:underline">
           Return to Flows
         </Link>
       </div>
@@ -124,7 +124,7 @@ export function FlowDetail() {
       <div className="px-4 pb-6 -mt-16 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
-            <Link to="/flows" aria-label="Back to flows">
+            <Link to="/" aria-label="Back to flows">
               <Button
                 variant="ghost"
                 className="rounded-full w-10 h-10 p-0 bg-background/50 hover:bg-background/80 backdrop-blur-md"

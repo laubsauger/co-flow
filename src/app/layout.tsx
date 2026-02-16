@@ -8,8 +8,8 @@ import { startSnapshotLoop } from '@/lib/stores/session-resume';
 import { useTheme } from '@/lib/hooks/use-theme';
 
 const navItems = [
-  { to: '/', icon: Hand, label: 'Gestures' },
-  { to: '/flows', icon: ListMusic, label: 'Flows' },
+  { to: '/', icon: ListMusic, label: 'Flows' },
+  { to: '/gestures', icon: Hand, label: 'Gestures' },
   { to: '/builder', icon: Wrench, label: 'Builder' },
 ] as const;
 

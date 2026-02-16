@@ -25,7 +25,7 @@ export function GestureDetail() {
         return (
             <div className="flex flex-col items-center justify-center h-screen space-y-4">
                 <h1 className="text-2xl font-bold">Gesture Not Found</h1>
-                <Link to="/" className="text-primary hover:underline">Return to Library</Link>
+                <Link to="/gestures" className="text-primary hover:underline">Return to Library</Link>
             </div>
         );
     }
@@ -66,7 +66,7 @@ export function GestureDetail() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
 
                 <div className="absolute top-4 left-4 z-10">
-                    <Link to="/" aria-label="Back to library">
+                    <Link to="/gestures" aria-label="Back to library">
                         <Button className="bg-background/50 hover:bg-background/80 text-foreground backdrop-blur-md rounded-full w-10 h-10 p-0 shadow-sm" variant="ghost">
                             <ArrowLeft className="w-5 h-5" aria-hidden="true" />
                         </Button>

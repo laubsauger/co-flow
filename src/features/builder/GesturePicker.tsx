@@ -8,36 +8,78 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Search, Plus, Clock } from 'lucide-react';
+import { Search, Plus, Clock, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { springs } from '@/motion/tokens';
+import { cn } from '@/lib/utils';
+import { ColoredTag } from '@/components/ColoredTag';
+import Fuse from 'fuse.js';
 import type { Gesture } from '@/lib/types/gesture';
 
 interface GesturePickerProps {
   open: boolean;
   onClose: () => void;
   onSelect: (gesture: Gesture) => void;
+  currentStepGestureIds: string[];
 }
 
-export function GesturePicker({ open, onClose, onSelect }: GesturePickerProps) {
+export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }: GesturePickerProps) {
   const [search, setSearch] = useState('');
+  const [selectedBodyArea, setSelectedBodyArea] = useState<string | null>(null);
+
+  const bodyAreas = useMemo(() => {
+    const areas = new Set<string>();
+    allGestures.forEach(g => g.bodyAreas.forEach((a: string) => areas.add(a)));
+    return Array.from(areas).sort();
+  }, []);
+
+  const fuse = useMemo(
+    () =>
+      new Fuse(allGestures, {
+        keys: [
+          { name: 'name', weight: 3 },
+          { name: 'summary', weight: 2 },
+          { name: 'tags', weight: 1.5 },
+          { name: 'bodyAreas', weight: 1 },
+        ],
+        threshold: 0.4,
+        includeScore: true,
+      }),
+    []
+  );
+
+  const usageCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const gid of currentStepGestureIds) {
+      counts.set(gid, (counts.get(gid) ?? 0) + 1);
+    }
+    return counts;
+  }, [currentStepGestureIds]);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return allGestures;
-    const q = search.toLowerCase();
-    return allGestures.filter(
-      (g) =>
-        g.name.toLowerCase().includes(q) ||
-        g.summary.toLowerCase().includes(q) ||
-        g.tags.some((t) => t.includes(q)) ||
-        g.bodyAreas.some((a) => a.includes(q))
-    );
-  }, [search]);
+    let results: Gesture[] = search.trim()
+      ? fuse.search(search).map((r) => r.item)
+      : [...allGestures];
+
+    if (selectedBodyArea) {
+      results = results.filter((g) => g.bodyAreas.includes(selectedBodyArea));
+    }
+
+    // Sort: unused gestures first, already-in-flow gestures last
+    results.sort((a, b) => {
+      const aUsed = usageCounts.has(a.id) ? 1 : 0;
+      const bUsed = usageCounts.has(b.id) ? 1 : 0;
+      return aUsed - bUsed;
+    });
+
+    return results;
+  }, [search, selectedBodyArea, fuse, usageCounts]);
 
   const handleSelect = (gesture: Gesture) => {
     onSelect(gesture);
     onClose();
     setSearch('');
+    setSelectedBodyArea(null);
   };
 
   return (
@@ -58,31 +100,85 @@ export function GesturePicker({ open, onClose, onSelect }: GesturePickerProps) {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1.5">
-          {filtered.map((gesture, i) => (
-            <motion.button
-              key={gesture.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...springs.soft, delay: i * 0.02 }}
-              onClick={() => handleSelect(gesture)}
-              className="w-full flex items-center gap-3 rounded-lg border bg-card p-3 text-left hover:bg-accent transition-colors"
+        {/* Body area filter chips */}
+        <div
+          role="group"
+          aria-label="Filter by body area"
+          className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide"
+        >
+          <button
+            onClick={() => setSelectedBodyArea(null)}
+            aria-pressed={selectedBodyArea === null}
+            className={cn(
+              "px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap",
+              selectedBodyArea === null
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            )}
+          >
+            All
+          </button>
+          {bodyAreas.map(area => (
+            <button
+              key={area}
+              onClick={() => setSelectedBodyArea(area)}
+              aria-pressed={selectedBodyArea === area}
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize",
+                selectedBodyArea === area
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              )}
             >
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">{gesture.name}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {gesture.bodyAreas.join(', ')}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {gesture.durationDefaults.defaultSec}s
-                </span>
-                <Plus className="w-4 h-4 text-primary" />
-              </div>
-            </motion.button>
+              {area}
+            </button>
           ))}
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1.5">
+          {filtered.map((gesture, i) => {
+            const count = usageCounts.get(gesture.id);
+            return (
+              <motion.button
+                key={gesture.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...springs.soft, delay: i * 0.02 }}
+                onClick={() => handleSelect(gesture)}
+                className={cn(
+                  "w-full flex items-center gap-3 rounded-lg border bg-card p-3 text-left hover:bg-accent transition-colors",
+                  count && "opacity-60"
+                )}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-sm truncate">{gesture.name}</p>
+                    {count && (
+                      <span className="text-[10px] font-medium bg-secondary text-muted-foreground rounded px-1.5 py-0.5 flex-shrink-0">
+                        ×{count}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-1 mt-1 flex-wrap">
+                    {gesture.tags.slice(0, 3).map(tag => (
+                      <ColoredTag key={tag} tag={tag} />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                    <Zap className="w-3 h-3" />
+                    {gesture.intensity}
+                  </span>
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {gesture.durationDefaults.defaultSec}s
+                  </span>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+              </motion.button>
+            );
+          })}
 
           {filtered.length === 0 && (
             <p className="text-center text-sm text-muted-foreground py-8">
