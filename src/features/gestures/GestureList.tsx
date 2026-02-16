@@ -83,11 +83,7 @@ export function GestureList() {
     return (
         <div className="max-w-2xl mx-auto pb-20">
             <div className="px-4 pt-4 pb-2">
-                <div className="flex items-baseline gap-2">
-                    <BrandHeader />
-                    <span className="text-muted-foreground/40 text-sm">/</span>
-                    <h1 className="text-lg font-semibold tracking-tight">Explore</h1>
-                </div>
+                <BrandHeader title="Explore" />
             </div>
 
             {/* Sticky search + filters */}

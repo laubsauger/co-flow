@@ -1,6 +1,10 @@
-export function BrandHeader() {
+interface BrandHeaderProps {
+    title?: string;
+}
+
+export function BrandHeader({ title }: BrandHeaderProps) {
     return (
-        <div className="flex items-center gap-1.5 select-none">
+        <div className="flex items-center gap-2 select-none">
             <svg width="16" height="16" viewBox="-40 -34 80 76" fill="none" className="text-primary">
                 <path
                     d="M0,38 C-18,28 -38,16 -38,-2 C-38,-18 -28,-30 -16,-30 C-8,-30 -2,-24 0,-18 C2,-24 8,-30 16,-30 C28,-30 38,-18 38,-2 C38,16 18,28 0,38Z"
@@ -10,7 +14,13 @@ export function BrandHeader() {
                 <path d="M0,10 C0,0 -5,-8 -10,-10 C-10,-10 -8,-1 -4,4 C-2,6 0,10 0,10Z" fill="currentColor" opacity="0.35"/>
                 <line x1="0" y1="8" x2="0" y2="20" stroke="currentColor" strokeWidth="3" opacity="0.4"/>
             </svg>
-            <span className="text-xs font-bold tracking-wider uppercase text-primary">co-flow</span>
+            <span className="text-sm font-bold tracking-wider uppercase text-primary">co-flow</span>
+            {title && (
+                <>
+                    <span className="text-muted-foreground/40 text-sm">/</span>
+                    <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
+                </>
+            )}
         </div>
     );
 }

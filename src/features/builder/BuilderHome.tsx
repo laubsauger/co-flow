@@ -33,11 +33,7 @@ export function BuilderHome() {
   return (
     <div className="p-4 max-w-2xl mx-auto pb-20">
       <header className="mb-4">
-        <div className="flex items-baseline gap-2">
-          <BrandHeader />
-          <span className="text-muted-foreground/40 text-sm">/</span>
-          <h1 className="text-lg font-semibold tracking-tight">Builder</h1>
-        </div>
+        <BrandHeader title="Builder" />
       </header>
 
       {/* Create new flow */}

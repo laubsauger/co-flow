@@ -85,11 +85,7 @@ export function FlowList() {
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
             <header className="mb-4 space-y-3">
-                <div className="flex items-baseline gap-2">
-                    <BrandHeader />
-                    <span className="text-muted-foreground/40 text-sm">/</span>
-                    <h1 className="text-lg font-semibold tracking-tight">Flows</h1>
-                </div>
+                <BrandHeader title="Flows" />
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
