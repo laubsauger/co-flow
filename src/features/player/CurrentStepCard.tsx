@@ -151,8 +151,8 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
       </div>
 
       {/* Content */}
-      <div className="flex-1 w-full p-6 flex flex-col justify-between">
-        <div className="space-y-2">
+      <div className="flex-1 w-full p-6 flex flex-col justify-between min-h-0">
+        <div className="space-y-2 flex-1 min-h-0">
           <h2 className={cn(
             'font-bold leading-tight',
             glanceMode ? 'text-3xl' : 'text-2xl'
@@ -160,7 +160,14 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
             {step.gesture.name}
           </h2>
           {!glanceMode && (
-            <p className="text-muted-foreground text-base leading-snug line-clamp-2">
+            <div className="overflow-y-auto max-h-[calc(100%-2rem)] scrollbar-hide">
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {step.gesture.description || step.gesture.summary}
+              </p>
+            </div>
+          )}
+          {glanceMode && step.gesture.summary && (
+            <p className="text-muted-foreground text-base leading-snug line-clamp-1">
               {step.gesture.summary}
             </p>
           )}
@@ -168,7 +175,7 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
 
         {/* Progress bar */}
         <div className={cn(
-          'w-full bg-secondary rounded-full overflow-hidden mt-4',
+          'w-full bg-secondary rounded-full overflow-hidden mt-3 flex-shrink-0',
           glanceMode ? 'h-3' : 'h-2'
         )}>
           <motion.div

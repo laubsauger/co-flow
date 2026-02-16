@@ -120,7 +120,11 @@ export function FlowDetail() {
     const playerSteps: PlayerStep[] = [];
     for (const s of localSteps) {
       if (!s.gesture) continue;
-      playerSteps.push({ gesture: s.gesture as Gesture, durationSec: s.durationSec });
+      playerSteps.push({
+        gesture: s.gesture as Gesture,
+        durationSec: s.durationSec,
+        side: s.side && s.side !== 'none' ? s.side : undefined,
+      });
     }
     if (playerSteps.length > 0) {
       loadFlow(flow.name, playerSteps);

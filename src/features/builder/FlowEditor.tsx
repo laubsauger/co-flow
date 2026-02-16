@@ -147,6 +147,7 @@ export function FlowEditor() {
       playerSteps.push({
         gesture: gesture as Gesture,
         durationSec: s.durationSec,
+        side: s.side && s.side !== 'none' ? s.side : undefined,
       });
     }
     if (playerSteps.length > 0) {

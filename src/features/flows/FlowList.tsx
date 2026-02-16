@@ -53,7 +53,11 @@ export function FlowList() {
                 ? gestureMap.get(s.gestureId)
                 : allGestures.find(g => g.id === s.gestureId);
             if (!gesture) continue;
-            steps.push({ gesture, durationSec: s.durationSec });
+            steps.push({
+                gesture,
+                durationSec: s.durationSec,
+                side: s.side && s.side !== 'none' ? s.side : undefined,
+            });
         }
 
         if (steps.length > 0) {

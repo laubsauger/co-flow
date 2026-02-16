@@ -184,7 +184,7 @@ export function PlayerView() {
             {/* Card Stack */}
             <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-4 overflow-hidden">
                 {/* Prev */}
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence>
                     {prevStep && (
                         <PrevStepCard key={`prev-${currentStepIndex - 1}`} step={prevStep} />
                     )}
@@ -203,7 +203,7 @@ export function PlayerView() {
                 </AnimatePresence>
 
                 {/* Next */}
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence>
                     {nextStep && (
                         <NextStepCard key={`next-${currentStepIndex + 1}`} step={nextStep} />
                     )}

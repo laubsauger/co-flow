@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { springs } from '@/motion/tokens';
 import { getBodyAreaColor } from '@/lib/body-area-colors';
 import type { PlayerStep } from '@/lib/types/player';
 
@@ -11,11 +10,10 @@ interface PrevStepCardProps {
 export function PrevStepCard({ step }: PrevStepCardProps) {
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 0.4, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={springs.soft}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
       className="w-full max-w-sm pointer-events-none"
     >
       <div
