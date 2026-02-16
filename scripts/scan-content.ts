@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 import { glob } from 'glob';
 import { fileURLToPath } from 'url';
@@ -16,21 +17,57 @@ async function main() {
   const gestureExports: string[] = [];
   const flowExports: string[] = [];
 
+  // Process Gestures
   gestureFiles.forEach((file, index) => {
     const importName = `gesture_${index}`;
-    // relative path from generated/index.ts to gesture.json
-    // generated is in src/content/generated
-    // gesture is in src/content/gestures/slug/gesture.json
-    // relative: ../gestures/slug/gesture.json
+    const dir = path.dirname(file); // gestures/slug
+    const fullDir = path.join(CONTENT_DIR, dir);
+    const hasPoster = existsSync(path.join(fullDir, 'poster.png'));
+
     const relativePath = path.join('..', file);
-    imports.push(`import ${importName} from '${relativePath}';`);
+    imports.push(`import ${importName}_json from '${relativePath}';`);
+
+    let posterAssignment = '';
+    if (hasPoster) {
+      const posterVar = `gesture_${index}_poster`;
+      imports.push(`import ${posterVar} from '../${dir}/poster.png';`);
+      posterAssignment = `poster: ${posterVar},`;
+    }
+
+    // Overwrite media.poster
+    imports.push(`const ${importName} = {
+        ...${importName}_json,
+        media: {
+            ...${importName}_json.media,
+            ${posterAssignment}
+        }
+    };`);
+
     gestureExports.push(importName);
   });
 
+  // Process Flows
   flowFiles.forEach((file, index) => {
     const importName = `flow_${index}`;
+    const dir = path.dirname(file);
+    const fullDir = path.join(CONTENT_DIR, dir);
+    const hasPoster = existsSync(path.join(fullDir, 'poster.png'));
+
     const relativePath = path.join('..', file);
-    imports.push(`import ${importName} from '${relativePath}';`);
+    imports.push(`import ${importName}_json from '${relativePath}';`);
+
+    let posterAssignment = '';
+    if (hasPoster) {
+      const posterVar = `flow_${index}_poster`;
+      imports.push(`import ${posterVar} from '../${dir}/poster.png';`);
+      posterAssignment = `poster: ${posterVar},`;
+    }
+
+    imports.push(`const ${importName} = {
+        ...${importName}_json,
+        ${posterAssignment}
+    };`);
+
     flowExports.push(importName);
   });
 
