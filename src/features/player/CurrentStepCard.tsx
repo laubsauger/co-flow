@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Video } from 'lucide-react';
-import { springs } from '@/motion/tokens';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { resolveGestureMediaUrl } from './hooks/resolve-media-url';
@@ -59,12 +58,11 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
 
   return (
     <motion.div
-      layout
       key={step.gesture.id}
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -20, scale: 0.95 }}
-      transition={springs.snappy}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
       className="w-full max-w-sm bg-card border rounded-3xl shadow-xl overflow-hidden flex flex-col aspect-[3/4]"
     >
       {/* Media area — poster or video */}
