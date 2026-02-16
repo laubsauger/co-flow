@@ -40,7 +40,7 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
     if (!video || !videoEnabled) return;
 
     if (playerStatus === 'playing') {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
     } else {
       video.pause();
     }
@@ -72,17 +72,15 @@ export function CurrentStepCard({ step, remainingTime, progress, glanceMode, pla
         className="w-full h-1/2 relative"
         style={{ backgroundColor: getBodyAreaColor(step.gesture.bodyAreas) }}
       >
-        {/* Poster (always rendered as fallback) */}
-        {posterSrc && (
-          <img
-            src={posterSrc}
-            className={cn(
-              'w-full h-full object-cover absolute inset-0',
-              videoEnabled && videoReady && 'opacity-0'
-            )}
-            alt={step.gesture.name}
-          />
-        )}
+        {/* Poster (or fallback) */}
+        <img
+          src={posterSrc || '/media/generic-gesture.png'}
+          className={cn(
+            'w-full h-full object-cover absolute inset-0',
+            videoEnabled && videoReady && 'opacity-0'
+          )}
+          alt={step.gesture.name}
+        />
         {/* Body area tint */}
         <div
           className="absolute inset-0 mix-blend-color opacity-35 pointer-events-none"

@@ -150,11 +150,19 @@ export function GesturePicker({ open, onClose, onSelect, currentStepGestureIds }
                   count && "opacity-60"
                 )}
               >
-                <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
-              />
-              <div className="flex-1 min-w-0">
+                <div className="w-16 h-12 rounded-md overflow-hidden bg-secondary relative flex-shrink-0">
+                  <img
+                    src={gesture.media.poster || '/media/generic-gesture.png'}
+                    className="w-full h-full object-cover"
+                    alt=""
+                    loading="lazy"
+                  />
+                  <div
+                    className="absolute inset-0 mix-blend-color opacity-40"
+                    style={{ backgroundColor: getBodyAreaColor(gesture.bodyAreas) }}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm truncate">{gesture.name}</p>
                     {count && (

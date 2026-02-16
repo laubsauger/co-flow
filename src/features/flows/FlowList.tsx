@@ -151,7 +151,7 @@ export function FlowList() {
                                             {poster ? (
                                                 <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
                                             ) : (
-                                                <PlaceholderImage />
+                                                <PlaceholderImage type="flow" />
                                             )}
                                             {tintColor && (
                                                 <div
@@ -231,6 +231,42 @@ export function FlowList() {
                                     transition={{ ...springs.soft, delay: i * 0.05 }}
                                     className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                                 >
+                                    {(() => {
+                                        // Try to find the first gesture to get a poster or color tint
+                                        const firstGesture = flow.steps[0]
+                                            ? allGestures.find(g => g.id === flow.steps[0].gestureId)
+                                            : undefined;
+
+                                        // For user flows, we mostly rely on the first gesture's poster or a generic fallback
+                                        // unless we add custom poster upload later.
+                                        const poster = flow.poster || firstGesture?.media.poster;
+                                        const tintColor = firstGesture ? getBodyAreaColor(firstGesture.bodyAreas) : undefined;
+
+                                        return (
+                                            <div
+                                                className="h-24 relative overflow-hidden"
+                                                style={{ backgroundColor: tintColor ?? 'var(--secondary)' }}
+                                            >
+                                                {poster ? (
+                                                    <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <PlaceholderImage type="flow" />
+                                                )}
+                                                {tintColor && (
+                                                    <div
+                                                        className="absolute inset-0 mix-blend-color opacity-50 pointer-events-none"
+                                                        style={{ backgroundColor: tintColor }}
+                                                    />
+                                                )}
+                                                {/* Edit/Play Overlay */}
+                                                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                                    <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                                                        {formatDuration(flow.steps)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
                                     <div className="p-4">
                                         <div className="flex items-start justify-between mb-1">
                                             <h3 className="font-semibold leading-tight">

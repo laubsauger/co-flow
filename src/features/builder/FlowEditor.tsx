@@ -286,11 +286,19 @@ function StepItem({
       <div className="flex items-center gap-2 p-3">
         <GripVertical className="w-4 h-4 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing" aria-hidden="true" />
 
-        <div
-          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-          style={{ backgroundColor: gesture ? getBodyAreaColor(gesture.bodyAreas) : 'var(--secondary)' }}
-        >
-          {index + 1}
+        <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
+          <img
+            src={gesture?.media.poster || '/media/generic-gesture.png'}
+            className="w-full h-full object-cover"
+            alt=""
+          />
+          <div
+            className="absolute inset-0 mix-blend-color opacity-30"
+            style={{ backgroundColor: gesture ? getBodyAreaColor(gesture.bodyAreas) : 'var(--secondary)' }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md bg-black/10">
+            {index + 1}
+          </div>
         </div>
 
         <button

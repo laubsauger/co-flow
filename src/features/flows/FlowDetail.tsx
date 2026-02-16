@@ -119,7 +119,7 @@ export function FlowDetail() {
             {poster ? (
               <img src={poster} alt={flow.name} className="w-full h-full object-cover" />
             ) : (
-              <PlaceholderImage />
+              <PlaceholderImage type="flow" />
             )}
             {tintColor && (
               <div
@@ -254,11 +254,19 @@ export function FlowDetail() {
                   transition={{ ...springs.soft, delay: i * 0.04 }}
                   className="flex items-center gap-3 rounded-lg bg-card/80 p-3"
                 >
-                  <div
-                    className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ backgroundColor: step.gesture ? getBodyAreaColor((step.gesture as Gesture).bodyAreas) : 'var(--secondary)' }}
-                  >
-                    {i + 1}
+                  <div className="flex-shrink-0 w-10 h-10 rounded-md overflow-hidden bg-secondary relative">
+                    <img
+                      src={step.gesture?.media.poster || '/media/generic-gesture.png'}
+                      className="w-full h-full object-cover"
+                      alt=""
+                    />
+                    <div
+                      className="absolute inset-0 mix-blend-color opacity-30"
+                      style={{ backgroundColor: step.gesture ? getBodyAreaColor(step.gesture.bodyAreas) : 'var(--secondary)' }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md bg-black/10">
+                      {i + 1}
+                    </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">
