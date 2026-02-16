@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { Hand, ListMusic, Wrench } from 'lucide-react';
+import { Hand, ListMusic, Wrench, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResumePrompt } from '@/features/player/ResumePrompt';
+import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { startSnapshotLoop } from '@/lib/stores/session-resume';
 
 const navItems = [
@@ -13,6 +14,7 @@ const navItems = [
 
 export function AppLayout() {
   const location = useLocation();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Start resume snapshot loop on mount
   useEffect(() => {
@@ -51,10 +53,20 @@ export function AppLayout() {
                   <span className="text-[11px] font-medium">{label}</span>
                 </NavLink>
               ))}
+              <button
+                onClick={() => setSettingsOpen(true)}
+                aria-label="Settings"
+                className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem] text-muted-foreground hover:text-foreground"
+              >
+                <Settings className="w-5 h-5" aria-hidden="true" />
+                <span className="text-[11px] font-medium">Settings</span>
+              </button>
             </div>
           </nav>
         </>
       )}
+
+      <SettingsDrawer open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }
