@@ -1,0 +1,32 @@
+{
+  "id": "hand-arm-care",
+  "name": "Hand & Arm Care",
+  "description": "Perfect for desk workers and artists.",
+  "tags": [
+    "hands",
+    "arms",
+    "repetitive-strain"
+  ],
+  "steps": [
+    {
+      "gestureId": "forearm-kneading",
+      "durationSec": 60,
+      "side": "left"
+    },
+    {
+      "gestureId": "hand-massage",
+      "durationSec": 60,
+      "side": "left"
+    },
+    {
+      "gestureId": "forearm-kneading",
+      "durationSec": 60,
+      "side": "right"
+    },
+    {
+      "gestureId": "hand-massage",
+      "durationSec": 60,
+      "side": "right"
+    }
+  ]
+}

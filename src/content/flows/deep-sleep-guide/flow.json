@@ -1,0 +1,24 @@
+{
+  "id": "deep-sleep-guide",
+  "name": "Deep Sleep Guide",
+  "description": "A continuous audio guide to help you drift off.",
+  "tags": [
+    "sleep",
+    "relaxation",
+    "audio-only"
+  ],
+  "steps": [],
+  "compiledMedia": {
+    "audio": "compiled-audio.mp3",
+    "chapters": [
+      {
+        "stepIndex": 0,
+        "startTime": 0
+      },
+      {
+        "stepIndex": 1,
+        "startTime": 300
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { usePlayerStore } from './PlayerState';
+import { usePlayerStore } from '@/lib/stores/player';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

@@ -1,0 +1,45 @@
+{
+  "id": "quick-neck-relief",
+  "name": "Quick Neck & Shoulder Relief",
+  "description": "A 5-minute routine to release tension in the upper body.",
+  "tags": [
+    "neck",
+    "shoulders",
+    "relaxation",
+    "quick"
+  ],
+  "steps": [
+    {
+      "gestureId": "neck-glides",
+      "durationSec": 60,
+      "title": "Warmup Neck Glides",
+      "side": "none",
+      "notes": "Start gentle."
+    },
+    {
+      "gestureId": "shoulder-compression",
+      "durationSec": 60,
+      "side": "left",
+      "notes": "Focus on the trap muscle."
+    },
+    {
+      "gestureId": "shoulder-compression",
+      "durationSec": 60,
+      "side": "right",
+      "notes": "Switch sides."
+    },
+    {
+      "gestureId": "trapezius-squeeze",
+      "durationSec": 60,
+      "side": "none",
+      "notes": "Both hands squeezing gently."
+    },
+    {
+      "gestureId": "neck-glides",
+      "durationSec": 60,
+      "title": "Cool Down Glides",
+      "side": "none",
+      "notes": "Finish with long strokes."
+    }
+  ]
+}

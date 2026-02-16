@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { allGestures } from '@/content/generated';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Play, Timer, Heart } from 'lucide-react';
-import { usePlayerStore } from '@/features/player/PlayerState';
+import { usePlayerStore } from '@/lib/stores/player';
 
 export function GestureDetail() {
     const { id } = useParams<{ id: string }>();

@@ -1,0 +1,54 @@
+{
+  "id": "full-body-relaxation",
+  "name": "Full Body Relaxation",
+  "description": "A balanced sequence covering the whole body.",
+  "tags": [
+    "full-body",
+    "relaxation",
+    "comprehensive"
+  ],
+  "steps": [
+    {
+      "gestureId": "neck-glides",
+      "durationSec": 60
+    },
+    {
+      "gestureId": "shoulder-compression",
+      "durationSec": 60,
+      "side": "left"
+    },
+    {
+      "gestureId": "shoulder-compression",
+      "durationSec": 60,
+      "side": "right"
+    },
+    {
+      "gestureId": "upper-back-circles",
+      "durationSec": 90
+    },
+    {
+      "gestureId": "lower-back-stretch",
+      "durationSec": 90
+    },
+    {
+      "gestureId": "calf-squeeze",
+      "durationSec": 60,
+      "side": "left"
+    },
+    {
+      "gestureId": "calf-squeeze",
+      "durationSec": 60,
+      "side": "right"
+    },
+    {
+      "gestureId": "foot-thumb-press",
+      "durationSec": 60,
+      "side": "left"
+    },
+    {
+      "gestureId": "foot-thumb-press",
+      "durationSec": 60,
+      "side": "right"
+    }
+  ]
+}

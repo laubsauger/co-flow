@@ -1,0 +1,47 @@
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Hand, ListMusic, Wrench } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { to: '/', icon: Hand, label: 'Gestures' },
+  { to: '/flows', icon: ListMusic, label: 'Flows' },
+  { to: '/builder', icon: Wrench, label: 'Builder' },
+] as const;
+
+export function AppLayout() {
+  const location = useLocation();
+
+  // Hide bottom nav on full-screen views (player)
+  const hideNav = location.pathname.startsWith('/play');
+
+  return (
+    <div className="min-h-screen bg-background font-sans antialiased text-foreground">
+      <Outlet />
+
+      {!hideNav && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t z-50 safe-area-bottom">
+          <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-4">
+            {navItems.map(({ to, icon: Icon, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) =>
+                  cn(
+                    'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[4rem]',
+                    isActive
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )
+                }
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[11px] font-medium">{label}</span>
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      )}
+    </div>
+  );
+}
