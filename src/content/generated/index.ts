@@ -83,8 +83,8 @@ const gesture_8 = {
             poster: gesture_8_poster,
         }
     };
-import gesture_9_json from '../gestures/rock-the-hips/gesture.json';
-import gesture_9_poster from '../gestures/rock-the-hips/poster.png';
+import gesture_9_json from '../gestures/rainbows/gesture.json';
+import gesture_9_poster from '../gestures/rainbows/poster.png';
 const gesture_9 = {
         ...gesture_9_json,
         media: {
@@ -92,8 +92,8 @@ const gesture_9 = {
             poster: gesture_9_poster,
         }
     };
-import gesture_10_json from '../gestures/rainbows/gesture.json';
-import gesture_10_poster from '../gestures/rainbows/poster.png';
+import gesture_10_json from '../gestures/rock-the-hips/gesture.json';
+import gesture_10_poster from '../gestures/rock-the-hips/poster.png';
 const gesture_10 = {
         ...gesture_10_json,
         media: {
@@ -110,8 +110,8 @@ const gesture_11 = {
             poster: gesture_11_poster,
         }
     };
-import gesture_12_json from '../gestures/neck-glides/gesture.json';
-import gesture_12_poster from '../gestures/neck-glides/poster.png';
+import gesture_12_json from '../gestures/lower-back-stretch/gesture.json';
+import gesture_12_poster from '../gestures/lower-back-stretch/poster.png';
 const gesture_12 = {
         ...gesture_12_json,
         media: {
@@ -119,8 +119,8 @@ const gesture_12 = {
             poster: gesture_12_poster,
         }
     };
-import gesture_13_json from '../gestures/lower-back-stretch/gesture.json';
-import gesture_13_poster from '../gestures/lower-back-stretch/poster.png';
+import gesture_13_json from '../gestures/neck-glides/gesture.json';
+import gesture_13_poster from '../gestures/neck-glides/poster.png';
 const gesture_13 = {
         ...gesture_13_json,
         media: {
