@@ -80,7 +80,10 @@ export function GestureList() {
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
             <header className="mb-6 space-y-4">
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Library</h1>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-primary">Explore</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Find the perfect gesture for every moment.</p>
+                </div>
 
                 <div className="flex gap-2">
                     <div className="relative flex-1">

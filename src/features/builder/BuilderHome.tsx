@@ -33,7 +33,7 @@ export function BuilderHome() {
         <h1 className="text-3xl font-bold tracking-tight text-primary">
           Builder
         </h1>
-        <p className="text-muted-foreground">Create custom flows.</p>
+        <p className="text-muted-foreground">Design your own healing sequences.</p>
       </header>
 
       {/* Create new flow */}
@@ -81,10 +81,10 @@ export function BuilderHome() {
       {flows.length === 0 && !showCreate ? (
         <div className="text-center py-16">
           <p className="text-muted-foreground mb-2">
-            No custom flows yet
+            Nothing here yet
           </p>
           <p className="text-sm text-muted-foreground">
-            Tap "New Flow" to create your first one.
+            Tap New Flow to start designing.
           </p>
         </div>
       ) : (

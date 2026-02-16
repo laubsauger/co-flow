@@ -74,7 +74,8 @@ export function PlayerView() {
         return (
             <div className="h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-xl font-bold">No Default Playlist</h2>
+                    <h2 className="text-xl font-bold">Nothing queued up</h2>
+                    <p className="text-sm text-muted-foreground mt-2">Head back and choose something to play.</p>
                     <Button onClick={() => navigate('/')} className="mt-4">Go Home</Button>
                 </div>
             </div>
@@ -91,8 +92,8 @@ export function PlayerView() {
                     transition={springs.bouncy}
                     className="text-center space-y-6"
                 >
-                    <h1 className="text-4xl font-bold">Session Complete</h1>
-                    <p className="text-primary-foreground/80">Great job taking care of yourself.</p>
+                    <h1 className="text-4xl font-bold">Well done</h1>
+                    <p className="text-primary-foreground/80">You showed up for yourself today.</p>
                     <Button variant="secondary" onClick={() => navigate('/')} className="w-full">
                         Done
                     </Button>

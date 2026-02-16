@@ -1,8 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { parseVtt, type VttCue } from '@/lib/utils/parse-vtt';
 import { cn } from '@/lib/utils';
+
+// Module-level transcript cache
+const transcriptCache = new Map<string, VttCue[]>();
+const transcriptListeners = new Set<() => void>();
+
+function fetchTranscript(key: string, gestureId: string, file: string) {
+  if (transcriptCache.has(key)) return;
+  transcriptCache.set(key, []); // mark as loading
+
+  const url = `/src/content/gestures/${gestureId}/${file}`;
+  fetch(url)
+    .then((r) => {
+      if (!r.ok) throw new Error('Failed to load transcript');
+      return r.text();
+    })
+    .then((raw) => {
+      transcriptCache.set(key, parseVtt(raw));
+      transcriptListeners.forEach((l) => l());
+    })
+    .catch(() => {});
+}
+
+function subscribeTranscript(cb: () => void) {
+  transcriptListeners.add(cb);
+  return () => { transcriptListeners.delete(cb); };
+}
 
 interface TranscriptSectionProps {
   gestureId: string;
@@ -19,25 +45,16 @@ export function TranscriptSection({
   gestureId,
   transcriptFile,
 }: TranscriptSectionProps) {
-  const [cues, setCues] = useState<VttCue[]>([]);
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!expanded || cues.length > 0) return;
+  const key = `${gestureId}:${transcriptFile}`;
 
-    setLoading(true);
-    const url = `/src/content/gestures/${gestureId}/${transcriptFile}`;
+  // Only trigger fetch when expanded
+  if (expanded) {
+    fetchTranscript(key, gestureId, transcriptFile);
+  }
 
-    fetch(url)
-      .then((r) => {
-        if (!r.ok) throw new Error('Failed to load transcript');
-        return r.text();
-      })
-      .then((raw) => setCues(parseVtt(raw)))
-      .catch(() => setCues([]))
-      .finally(() => setLoading(false));
-  }, [expanded, gestureId, transcriptFile, cues.length]);
+  const cues = useSyncExternalStore(subscribeTranscript, () => transcriptCache.get(key) ?? []);
 
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -61,11 +78,7 @@ export function TranscriptSection({
           animate={{ height: 'auto', opacity: 1 }}
           className="border-t"
         >
-          {loading ? (
-            <div className="p-4 text-sm text-muted-foreground">
-              Loading transcript...
-            </div>
-          ) : cues.length === 0 ? (
+          {cues.length === 0 ? (
             <div className="p-4 text-sm text-muted-foreground">
               No transcript available.
             </div>

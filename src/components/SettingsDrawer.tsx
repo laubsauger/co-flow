@@ -130,7 +130,7 @@ export function SettingsDrawer({ open, onOpenChange }: SettingsDrawerProps) {
             <div className="rounded-lg border p-4 space-y-1 text-sm">
               <p className="font-medium">Co-Flow</p>
               <p className="text-muted-foreground">
-                Guided massage coaching companion
+                Your gentle guide to massage & bodywork
               </p>
             </div>
           </section>

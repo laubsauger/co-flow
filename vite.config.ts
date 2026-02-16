@@ -16,9 +16,9 @@ export default defineConfig({
       manifest: {
         name: 'Co-Flow',
         short_name: 'Co-Flow',
-        description: 'Guided massage coaching companion',
-        theme_color: '#0a0a0a',
-        background_color: '#0a0a0a',
+        description: 'Your gentle guide to massage & bodywork',
+        theme_color: '#1a1916',
+        background_color: '#1a1916',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/co-flow/',

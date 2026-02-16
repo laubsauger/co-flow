@@ -1,8 +1,44 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { parseVtt, getActiveCue, type VttCue } from '@/lib/utils/parse-vtt';
 import { resolveGestureMediaUrl } from './hooks/resolve-media-url';
 import { cn } from '@/lib/utils';
+
+// Module-level VTT cache — no refs, no effects, lint-friendly
+const vttCache = new Map<string, VttCue[]>();
+const vttListeners = new Set<() => void>();
+
+function fetchVtt(key: string, gestureId: string, captionsFile: string) {
+  if (vttCache.has(key)) return;
+  vttCache.set(key, []); // mark as loading
+
+  const url = resolveGestureMediaUrl(gestureId, captionsFile);
+  fetch(url)
+    .then((r) => {
+      if (!r.ok) throw new Error(`Failed to load ${url}`);
+      return r.text();
+    })
+    .then((raw) => {
+      vttCache.set(key, parseVtt(raw));
+      vttListeners.forEach((l) => l());
+    })
+    .catch(() => {});
+}
+
+function subscribeVtt(cb: () => void) {
+  vttListeners.add(cb);
+  return () => { vttListeners.delete(cb); };
+}
+
+function useVttCues(gestureId: string, captionsFile: string | undefined): VttCue[] {
+  const key = captionsFile ? `${gestureId}:${captionsFile}` : '';
+
+  if (key && captionsFile) {
+    fetchVtt(key, gestureId, captionsFile);
+  }
+
+  return useSyncExternalStore(subscribeVtt, () => vttCache.get(key) ?? []);
+}
 
 interface CaptionOverlayProps {
   gestureId: string;
@@ -17,34 +53,7 @@ export function CaptionOverlay({
   elapsedSec,
   glanceMode,
 }: CaptionOverlayProps) {
-  const [cues, setCues] = useState<VttCue[]>([]);
-
-  // Fetch and parse VTT when the captions file changes
-  useEffect(() => {
-    if (!captionsFile) {
-      setCues([]);
-      return;
-    }
-
-    const url = resolveGestureMediaUrl(gestureId, captionsFile);
-    let cancelled = false;
-
-    fetch(url)
-      .then((r) => {
-        if (!r.ok) throw new Error(`Failed to load ${url}`);
-        return r.text();
-      })
-      .then((raw) => {
-        if (!cancelled) setCues(parseVtt(raw));
-      })
-      .catch(() => {
-        if (!cancelled) setCues([]);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [gestureId, captionsFile]);
+  const cues = useVttCues(gestureId, captionsFile);
 
   const activeCue = useMemo(
     () => getActiveCue(cues, elapsedSec),

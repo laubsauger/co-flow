@@ -82,7 +82,10 @@ export function FlowList() {
     return (
         <div className="p-4 max-w-2xl mx-auto pb-20">
             <header className="mb-6 space-y-3">
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Flows</h1>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-primary">Flows</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Guided sequences crafted with care.</p>
+                </div>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -199,12 +202,12 @@ export function FlowList() {
                 <div className="grid grid-cols-1 gap-3">
                     {filteredUserFlows.length === 0 ? (
                         <div className="text-center py-12 text-muted-foreground">
-                            <p className="text-sm mb-2">No custom flows yet</p>
+                            <p className="text-sm mb-2">Your flows will live here</p>
                             <Link
                                 to="/builder"
                                 className="text-primary text-sm hover:underline"
                             >
-                                Create one in the Builder
+                                Design your first in the Builder
                             </Link>
                         </div>
                     ) : (
